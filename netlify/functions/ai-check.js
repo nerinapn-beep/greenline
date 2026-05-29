@@ -10,16 +10,23 @@ exports.handler = async (event) => {
       body: ''
     };
   }
- 
+
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method not allowed' };
   }
- 
-  const API_KEY = process.env.ANTHROPIC_API_KEY || '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';
- 
+
+  const API_KEY = process.env.ANTHROPIC_API_KEY;
+
+  if (!API_KEY) {
+    return {
+      statusCode: 500,
+      headers: { 'Access-Control-Allow-Origin': '*' },
+      body: JSON.stringify({ error: 'API key not configured' })
+    };
+  }
+
   try {
     const body = JSON.parse(event.body);
- 
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -33,9 +40,9 @@ exports.handler = async (event) => {
         messages: body.messages
       })
     });
- 
+
     const data = await response.json();
- 
+
     return {
       statusCode: 200,
       headers: {
@@ -52,4 +59,3 @@ exports.handler = async (event) => {
     };
   }
 };
- 
