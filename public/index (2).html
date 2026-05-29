@@ -1,0 +1,1683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1A2E22">
+<title>Zest — Your Money, Handled.</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --green:#2D6A4F;--green-light:#52B788;--green-pale:#D8F3DC;--lime:#B7E4C7;
+  --cream:#F8F4EE;--dark:#1A2E22;--dark-2:#0d1a10;--mid:#3D5A47;--muted:#7A9E87;
+  --gold:#D4A843;--gold-light:#F0C040;--gold-dark:#B8860B;
+  --coral:#E07B5A;--coral-pale:#FAE8E2;--white:#FFFFFF;
+  --shadow:0 2px 16px rgba(0,0,0,0.07);--shadow-lg:0 8px 32px rgba(0,0,0,0.15);
+  --fd:'Fraunces',Georgia,serif;--fb:'DM Sans',system-ui,sans-serif;
+  --r:12px;--r-lg:20px;--r-xl:28px;
+}
+html,body{height:100%;overflow:hidden;background:var(--dark-2);font-family:var(--fb)}
+
+/* ── AUTH ── */
+#auth-screen{position:fixed;inset:0;background:var(--dark);display:flex;align-items:center;justify-content:center;z-index:1000;padding:24px}
+.auth-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:var(--r-xl);padding:36px 28px;width:100%;max-width:380px}
+.auth-logo{font-family:var(--fd);font-size:42px;font-style:italic;font-weight:300;background:linear-gradient(135deg,var(--gold-dark),var(--gold),var(--gold-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px}
+.auth-tagline{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-bottom:28px}
+.auth-tabs{display:flex;background:rgba(255,255,255,0.04);border-radius:var(--r);padding:3px;margin-bottom:22px;border:1px solid rgba(255,255,255,0.06)}
+.auth-tab{flex:1;padding:8px;border:none;background:none;border-radius:9px;font-family:var(--fb);font-size:13px;font-weight:500;cursor:pointer;color:var(--muted);transition:all .2s}
+.auth-tab.active{background:rgba(82,183,136,0.15);color:var(--green-light)}
+.auth-err{background:rgba(224,123,90,0.15);color:var(--coral);border-radius:var(--r);padding:10px 14px;font-size:12px;margin-bottom:14px;display:none;border:1px solid rgba(224,123,90,0.2)}
+.auth-field{margin-bottom:14px}
+.auth-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:6px;display:block}
+.auth-input{width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:var(--r);padding:12px 14px;font-family:var(--fb);font-size:14px;color:var(--white);outline:none;transition:border-color .2s}
+.auth-input:focus{border-color:rgba(82,183,136,0.4)}
+.auth-input::placeholder{color:rgba(255,255,255,0.2)}
+.auth-btn{width:100%;background:var(--green-light);color:var(--dark);border:none;border-radius:var(--r);padding:15px;font-family:var(--fb);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;margin-top:4px}
+.auth-btn:hover{background:var(--lime)}
+.auth-btn:disabled{opacity:.5;cursor:not-allowed}
+.auth-switch{text-align:center;font-size:12px;color:var(--muted);margin-top:14px}
+.auth-switch a{color:var(--green-light);cursor:pointer;font-weight:500}
+
+/* ── APP SHELL ── */
+#app-screen{display:none;position:fixed;inset:0;background:var(--dark-2)}
+.app{width:100%;height:100%;max-width:430px;margin:0 auto;background:var(--cream);display:flex;flex-direction:column;position:relative;overflow:hidden}
+
+/* ── SCREENS ── */
+.screen{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .3s ease;display:flex;flex-direction:column;background:var(--cream)}
+.screen.active{opacity:1;pointer-events:all}
+
+/* ── ONBOARDING ── */
+.ob-screen{background:var(--dark);padding:env(safe-area-inset-top,40px) 28px 32px;justify-content:space-between}
+.ob-logo{font-family:var(--fd);font-size:52px;font-style:italic;font-weight:300;background:linear-gradient(135deg,var(--gold-dark),var(--gold),var(--gold-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-1.5px;line-height:1;margin-bottom:6px}
+.ob-tag{font-size:10px;color:var(--muted);letter-spacing:2.5px;text-transform:uppercase;margin-bottom:48px}
+.ob-q{font-family:var(--fd);font-size:30px;color:var(--white);font-weight:300;line-height:1.3;margin-bottom:8px}
+.ob-sub{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:24px}
+.ob-opts{display:flex;flex-direction:column;gap:10px;flex:1}
+.ob-opt{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:var(--r-lg);padding:15px 18px;color:var(--white);font-family:var(--fb);cursor:pointer;transition:all .25s;text-align:left;display:flex;align-items:center;gap:12px}
+.ob-opt.sel,.ob-opt:hover{background:rgba(82,183,136,0.14);border-color:var(--green-light);color:var(--green-light)}
+.ob-opt-icon{font-size:22px;flex-shrink:0}
+.ob-opt-lbl{font-weight:600;font-size:14px}
+.ob-opt-desc{font-size:11px;color:var(--muted);margin-top:2px}
+.ob-cta{background:var(--green-light);color:var(--dark);border:none;border-radius:var(--r-lg);padding:18px;font-family:var(--fb);font-size:15px;font-weight:700;cursor:pointer;width:100%;margin-top:20px;transition:all .2s}
+.ob-cta:hover{background:var(--lime);transform:translateY(-1px)}
+
+/* ── HOME ── */
+.home-hero{background:var(--dark);padding:calc(env(safe-area-inset-top,20px) + 28px) 22px 26px;border-radius:0 0 36px 36px;flex-shrink:0;position:relative}
+.hero-topbar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
+.hero-greet{font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px}
+.hero-name{font-family:var(--fd);font-size:24px;color:var(--white);font-weight:300}
+.hero-right{display:flex;align-items:center;gap:10px}
+.privacy-btn{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:6px 12px;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;font-family:var(--fb);transition:all .2s}
+.privacy-btn:hover{background:rgba(255,255,255,0.12)}
+.avatar-btn{width:34px;height:34px;border-radius:50%;background:rgba(82,183,136,0.15);border:1px solid rgba(82,183,136,0.25);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--green-light);cursor:pointer;position:relative;font-family:var(--fb)}
+.avatar-menu{position:absolute;top:42px;right:0;background:var(--dark);border:1px solid rgba(255,255,255,0.1);border-radius:var(--r-lg);padding:8px;min-width:160px;z-index:200;display:none;box-shadow:var(--shadow-lg)}
+.avatar-menu.open{display:block}
+.avatar-menu-item{padding:10px 14px;font-size:13px;color:var(--white);cursor:pointer;border-radius:var(--r);transition:all .15s;font-family:var(--fb)}
+.avatar-menu-item:hover{background:rgba(255,255,255,0.07)}
+.avatar-menu-item.danger{color:var(--coral)}
+.mood-card{background:rgba(82,183,136,0.12);border:1px solid rgba(82,183,136,0.22);border-radius:16px;padding:15px 16px;display:flex;align-items:center;gap:12px}
+.mood-icon{font-size:28px}
+.mood-status{font-family:var(--fd);font-size:17px;color:var(--green-light);font-weight:300}
+.mood-sub{font-size:11px;color:var(--muted);margin-top:2px}
+
+/* NOTIF BANNER */
+.notif-banner{margin:14px 16px 0;border-radius:14px;padding:12px 14px;display:flex;gap:10px;align-items:center;transition:all .3s}
+.notif-banner.morning{background:rgba(212,168,67,0.1);border:1px solid rgba(212,168,67,0.2)}
+.notif-banner.afternoon{background:rgba(82,183,136,0.1);border:1px solid rgba(82,183,136,0.2)}
+.notif-banner.evening{background:rgba(224,123,90,0.1);border:1px solid rgba(224,123,90,0.2)}
+.notif-icon{font-size:20px;flex-shrink:0}
+.notif-title{font-size:12px;font-weight:600;color:var(--dark)}
+.notif-sub{font-size:11px;color:var(--mid);margin-top:1px;line-height:1.4}
+
+/* HOME BODY */
+.home-body{flex:1;overflow-y:auto;padding:16px 16px 0}
+.home-body::-webkit-scrollbar{display:none}
+.sec-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;font-weight:600}
+.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.stat-card{background:var(--white);border-radius:16px;padding:14px;box-shadow:var(--shadow)}
+.stat-lbl{font-size:11px;color:var(--muted);margin-bottom:6px}
+.stat-val{font-family:var(--fd);font-size:22px;color:var(--dark);font-weight:400;transition:all .3s}
+.stat-val.green{color:var(--green)}
+.stat-trend{font-size:10px;color:var(--green);margin-top:3px}
+.stat-trend.muted{color:var(--muted)}
+.blurred .stat-val,.blurred .bar-amount,.blurred .debt-sub-text{filter:blur(7px);user-select:none}
+
+.budget-card{background:var(--white);border-radius:16px;padding:15px 16px;margin-bottom:12px;box-shadow:var(--shadow)}
+.budget-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.budget-label{font-size:13px;font-weight:600;color:var(--dark)}
+.budget-amount{font-size:13px;color:var(--mid);font-weight:500}
+.bar-amount{transition:all .3s}
+.bar-track{height:8px;background:var(--green-pale);border-radius:100px;overflow:hidden;margin-bottom:7px}
+.bar-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--green),var(--green-light));transition:width .5s ease}
+.budget-sub{font-size:11px;color:var(--muted)}
+
+.debt-teaser{background:linear-gradient(135deg,#2a1a10 0%,#3d2010 100%);border-radius:16px;padding:15px 16px;display:flex;align-items:center;gap:12px;margin-bottom:12px;cursor:pointer;transition:all .2s}
+.debt-teaser:hover{transform:translateY(-1px)}
+.dt-icon{font-size:24px;flex-shrink:0}
+.dt-title{font-size:13px;font-weight:600;color:var(--white);margin-bottom:2px}
+.debt-sub-text{font-size:11px;color:#c0856a;transition:all .3s}
+.dt-arrow{color:var(--coral);font-size:18px;margin-left:auto;flex-shrink:0}
+
+/* QUICK ACTIONS */
+.quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.quick-card{background:var(--white);border-radius:16px;padding:14px;box-shadow:var(--shadow);cursor:pointer;transition:all .2s;display:flex;flex-direction:column;gap:6px}
+.quick-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.quick-icon{font-size:22px;margin-bottom:2px}
+.quick-label{font-size:13px;font-weight:600;color:var(--dark)}
+.quick-sub{font-size:11px;color:var(--muted)}
+
+/* TALK TO ZEST */
+.voice-card{background:var(--dark);border-radius:16px;padding:15px 16px;margin-bottom:12px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s}
+.voice-card:hover{background:var(--mid)}
+.voice-mic{width:42px;height:42px;background:rgba(82,183,136,0.15);border:1px solid rgba(82,183,136,0.28);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;transition:all .3s}
+.voice-mic.listening{background:rgba(224,123,90,0.2);border-color:var(--coral);animation:vPulse 1s infinite}
+.voice-mic.processing{background:rgba(212,168,67,0.2);border-color:var(--gold)}
+@keyframes vPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.voice-title{font-size:13px;font-weight:600;color:var(--white)}
+.voice-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.voice-arrow{color:var(--green-light);font-size:16px;margin-left:auto;flex-shrink:0}
+
+/* ── NUDGES ── */
+.nudge-hero{background:linear-gradient(160deg,var(--dark) 0%,#1e3d2a 100%);padding:calc(env(safe-area-inset-top,20px) + 28px) 22px 24px;border-radius:0 0 36px 36px;flex-shrink:0}
+.nudge-title{font-family:var(--fd);font-size:24px;color:var(--white);font-weight:300;margin-bottom:4px}
+.nudge-sub{font-size:12px;color:var(--muted)}
+.nudge-body{flex:1;overflow-y:auto;padding:16px}
+.nudge-body::-webkit-scrollbar{display:none}
+.nudge-card{background:var(--white);border-radius:18px;padding:16px 18px;margin-bottom:10px;box-shadow:var(--shadow);display:flex;gap:12px;align-items:flex-start;border-left:3px solid transparent;cursor:pointer;transition:all .2s}
+.nudge-card:hover{transform:translateX(3px)}
+.nudge-card.g{border-left-color:var(--green-light)}
+.nudge-card.gold{border-left-color:var(--gold)}
+.nudge-card.coral{border-left-color:var(--coral)}
+.nc-icon{font-size:22px;margin-top:1px;flex-shrink:0}
+.nc-title{font-size:13px;font-weight:600;color:var(--dark);margin-bottom:3px;line-height:1.4}
+.nc-meta{font-size:11px;color:var(--muted)}
+.nc-action{font-size:10px;color:var(--green);font-weight:700;margin-top:7px;letter-spacing:.5px;text-transform:uppercase}
+
+/* ── DEBT ── */
+.debt-hero{background:var(--dark);padding:calc(env(safe-area-inset-top,20px) + 28px) 22px 24px;border-radius:0 0 36px 36px;flex-shrink:0}
+.dh-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+.dh-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.dh-title{font-family:var(--fd);font-size:26px;color:var(--white);font-weight:300}
+.dh-title em{color:var(--coral);font-style:italic}
+.add-debt-btn{background:rgba(224,123,90,0.15);border:1px solid rgba(224,123,90,0.3);color:var(--coral);font-family:var(--fb);font-size:12px;font-weight:600;padding:7px 14px;border-radius:100px;cursor:pointer;transition:all .2s}
+.sum-row{display:flex;gap:8px}
+.sum-pill{flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:10px 12px}
+.sp-lbl{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
+.sp-val{font-family:var(--fd);font-size:17px;color:var(--white);font-weight:300}
+.sp-val.coral{color:var(--coral)}
+.sp-val.green{color:var(--green-light)}
+
+.strat-tabs{display:flex;gap:6px;padding:12px 16px 4px;flex-shrink:0}
+.stab{flex:1;padding:8px 4px;border-radius:10px;border:1.5px solid transparent;background:var(--white);font-family:var(--fb);font-size:10px;font-weight:700;letter-spacing:.3px;cursor:pointer;color:var(--muted);text-align:center;transition:all .2s;box-shadow:var(--shadow)}
+.stab.active{background:var(--dark);color:var(--green-light);border-color:var(--green-light)}
+
+.extra-box{margin:8px 16px;background:linear-gradient(135deg,var(--green) 0%,#1a3d2a 100%);border-radius:14px;padding:12px 16px;display:flex;gap:10px;align-items:center}
+.extra-icon{font-size:18px;flex-shrink:0}
+.extra-title{font-size:12px;font-weight:600;color:var(--white);margin-bottom:1px}
+.extra-sub{font-size:10px;color:rgba(255,255,255,0.65);line-height:1.4}
+
+.debt-list{padding:10px 16px 0;flex:1;overflow-y:auto}
+.debt-list::-webkit-scrollbar{display:none}
+.dc{background:var(--white);border-radius:20px;padding:16px;margin-bottom:10px;box-shadow:var(--shadow);cursor:pointer;transition:all .25s;border:2px solid transparent;position:relative;overflow:hidden}
+.dc:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+.dc.focused{border-color:var(--coral)}
+.dc.focused::before{content:'🎯 PAY OFF FIRST';position:absolute;top:0;right:0;background:var(--coral);color:white;font-size:9px;font-weight:700;letter-spacing:1px;padding:4px 12px;border-radius:0 18px 0 10px}
+.dc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.dc-icon-wrap{display:flex;align-items:center;gap:9px}
+.dc-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.dc-name{font-weight:600;font-size:13px;color:var(--dark)}
+.dc-type{font-size:10px;color:var(--muted);margin-top:1px}
+.dc-rate{text-align:right}
+.dc-rate-val{font-family:var(--fd);font-size:17px;color:var(--coral)}
+.dc-rate-lbl{font-size:9px;color:var(--muted);margin-top:1px}
+.dc-prog-top{display:flex;justify-content:space-between;font-size:11px;color:var(--mid);margin-bottom:5px}
+.dc-prog-track{height:5px;background:var(--green-pale);border-radius:100px;overflow:hidden;margin-bottom:10px}
+.dc-prog-fill{height:100%;border-radius:100px}
+.dc-stats{display:flex;gap:6px}
+.dc-stat{flex:1;background:var(--cream);border-radius:10px;padding:8px;text-align:center}
+.dc-sv{font-family:var(--fd);font-size:13px;color:var(--dark)}
+.dc-sv.coral{color:var(--coral)}
+.dc-sv.green{color:var(--green)}
+.dc-sl{font-size:9px;color:var(--muted);margin-top:1px}
+
+/* PAYMENT INPUT */
+.pay-row{display:flex;gap:8px;margin-top:12px}
+.pay-input{flex:1;background:var(--cream);border:1.5px solid rgba(0,0,0,0.08);border-radius:10px;padding:9px 12px;font-family:var(--fb);font-size:13px;color:var(--dark);outline:none;transition:border-color .2s}
+.pay-input:focus{border-color:var(--green-light)}
+.pay-btn{background:var(--green-light);color:var(--dark);border:none;border-radius:10px;padding:9px 14px;font-family:var(--fb);font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s}
+.pay-btn:hover{background:var(--lime)}
+
+/* ADD DEBT MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(26,46,34,0.75);z-index:500;display:flex;align-items:flex-end;display:none}
+.modal-overlay.open{display:flex}
+.modal-sheet{background:var(--cream);border-radius:34px 34px 0 0;padding:26px 22px calc(env(safe-area-inset-bottom,20px) + 24px);width:100%;max-height:85vh;overflow-y:auto}
+.modal-sheet::-webkit-scrollbar{display:none}
+.modal-title{font-family:var(--fd);font-size:22px;color:var(--dark);font-weight:300;margin-bottom:4px}
+.modal-sub{font-size:12px;color:var(--muted);margin-bottom:20px}
+.sh-handle{width:36px;height:4px;background:rgba(0,0,0,0.12);border-radius:100px;margin:0 auto 20px}
+.fg{margin-bottom:14px}
+.fl{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:7px;font-weight:700;display:block}
+.fi{width:100%;background:var(--white);border:1.5px solid rgba(0,0,0,0.08);border-radius:12px;padding:12px 14px;font-family:var(--fb);font-size:13px;color:var(--dark);outline:none;transition:border-color .2s}
+.fi:focus{border-color:var(--green-light)}
+.f-row{display:flex;gap:10px}
+.f-row .fg{flex:1}
+.submit-btn{width:100%;background:var(--green-light);color:var(--dark);border:none;border-radius:14px;padding:15px;font-family:var(--fb);font-size:14px;font-weight:700;cursor:pointer;transition:all .2s}
+.submit-btn:hover{background:var(--lime)}
+.cancel-lnk{display:block;text-align:center;margin-top:10px;font-size:12px;color:var(--muted);cursor:pointer;padding:8px}
+
+/* ── GROWTH ── */
+.growth-hero{background:var(--dark);padding:calc(env(safe-area-inset-top,20px) + 28px) 22px 26px;border-radius:0 0 36px 36px;flex-shrink:0}
+.gr-title{font-family:var(--fd);font-size:24px;color:var(--white);font-weight:300;margin-bottom:14px}
+.gr-stage{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.05);border-radius:13px;padding:13px 16px}
+.gr-sicon{font-size:26px}
+.gr-slbl{font-size:11px;color:var(--muted)}
+.gr-sname{font-family:var(--fd);font-size:16px;color:var(--green-light)}
+.gr-bar-track{height:4px;background:rgba(255,255,255,0.08);border-radius:100px;margin-top:7px}
+.gr-bar-fill{height:100%;background:var(--green-light);border-radius:100px;transition:width .5s ease}
+.growth-body{flex:1;overflow-y:auto;padding:16px}
+.growth-body::-webkit-scrollbar{display:none}
+.win-card{background:var(--white);border-radius:18px;padding:15px 16px;margin-bottom:10px;box-shadow:var(--shadow);display:flex;gap:12px;align-items:center}
+.win-icon{font-size:24px;flex-shrink:0}
+.win-title{font-size:13px;font-weight:600;color:var(--dark)}
+.win-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.win-badge{margin-left:auto;background:var(--green-pale);color:var(--green);font-size:10px;font-weight:700;padding:3px 10px;border-radius:100px;white-space:nowrap;flex-shrink:0}
+.recap{background:linear-gradient(135deg,var(--green) 0%,var(--green-light) 100%);border-radius:18px;padding:20px;color:var(--white);margin-bottom:10px}
+.recap-lbl{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;opacity:.7;margin-bottom:6px}
+.recap-val{font-family:var(--fd);font-size:36px;font-weight:300;margin-bottom:3px}
+.recap-sub{font-size:11px;opacity:.8}
+.debt-cleared{background:linear-gradient(135deg,#2a1a10 0%,var(--coral) 100%);border-radius:18px;padding:20px;color:var(--white);margin-bottom:10px}
+.dc2-lbl{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;opacity:.7;margin-bottom:6px}
+.dc2-val{font-family:var(--fd);font-size:36px;font-weight:300;margin-bottom:3px}
+.dc2-sub{font-size:11px;opacity:.8}
+
+/* ── VOICE SCREEN ── */
+.voice-screen-hero{background:var(--dark);padding:calc(env(safe-area-inset-top,20px) + 28px) 22px 24px;border-radius:0 0 36px 36px;flex-shrink:0;text-align:center}
+.voice-screen-title{font-family:var(--fd);font-size:24px;color:var(--white);font-weight:300;margin-bottom:4px}
+.voice-screen-sub{font-size:12px;color:var(--muted)}
+.voice-screen-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;gap:20px}
+.big-mic{width:100px;height:100px;border-radius:50%;background:rgba(82,183,136,0.12);border:2px solid rgba(82,183,136,0.25);display:flex;align-items:center;justify-content:center;font-size:42px;cursor:pointer;transition:all .3s}
+.big-mic.listening{background:rgba(224,123,90,0.15);border-color:var(--coral);animation:vPulse 1s infinite}
+.big-mic.processing{background:rgba(212,168,67,0.15);border-color:var(--gold)}
+.mic-hint{font-size:13px;color:var(--muted);text-align:center;line-height:1.6}
+.mic-hint em{color:var(--green-light);font-style:normal;font-weight:600}
+.transcript-box{background:var(--white);border-radius:16px;padding:14px 16px;width:100%;min-height:50px;font-size:15px;color:var(--dark);font-style:italic;box-shadow:var(--shadow);text-align:center}
+.voice-result{border-radius:18px;padding:18px;width:100%}
+.voice-result.yes{background:var(--green-pale);border:1.5px solid rgba(82,183,136,0.3)}
+.voice-result.no{background:var(--coral-pale);border:1.5px solid rgba(224,123,90,0.3)}
+.voice-result.maybe{background:#FEF9E7;border:1.5px solid rgba(212,168,67,0.3)}
+.vr-header{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.vr-badge{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0}
+.voice-result.yes .vr-badge{background:var(--green);color:white}
+.voice-result.no .vr-badge{background:var(--coral);color:white}
+.voice-result.maybe .vr-badge{background:var(--gold);color:white}
+.vr-headline{font-family:var(--fd);font-size:18px;font-weight:300}
+.voice-result.yes .vr-headline{color:var(--green)}
+.voice-result.no .vr-headline{color:#b83a2a}
+.voice-result.maybe .vr-headline{color:var(--gold-dark)}
+.vr-body{font-size:13px;color:var(--mid);line-height:1.6}
+.replay-btn{display:inline-flex;align-items:center;gap:6px;margin-top:10px;background:none;border:1px solid rgba(0,0,0,0.1);padding:6px 14px;border-radius:100px;font-size:12px;cursor:pointer;color:var(--mid);font-family:var(--fb);transition:all .2s}
+.replay-btn:hover{background:rgba(0,0,0,0.04)}
+.voice-thinking{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);padding:12px 0}
+.dots span{width:7px;height:7px;border-radius:50%;background:var(--green-light);display:inline-block;animation:dotPulse 1.3s infinite}
+.dots span:nth-child(2){animation-delay:.2s}
+.dots span:nth-child(3){animation-delay:.4s}
+@keyframes dotPulse{0%,100%{transform:scale(.7);opacity:.4}50%{transform:scale(1);opacity:1}}
+
+/* ── NAV ── */
+.nav{display:flex;padding:8px 8px calc(env(safe-area-inset-bottom,10px) + 8px);background:var(--dark);border-top:1px solid rgba(255,255,255,0.06);flex-shrink:0}
+.nav-btn{flex:1;padding:7px 2px 4px;background:none;border:none;color:var(--muted);font-family:var(--fb);font-size:9px;font-weight:600;letter-spacing:.8px;cursor:pointer;border-radius:10px;display:flex;flex-direction:column;align-items:center;gap:2px;text-transform:uppercase;transition:all .2s}
+.nav-btn.active{color:var(--green-light)}
+.ni{font-size:20px;line-height:1}
+.nav-dot{width:4px;height:4px;border-radius:100px;background:var(--green-light);opacity:0;transition:opacity .2s}
+.nav-btn.active .nav-dot{opacity:1}
+
+/* ── TOAST ── */
+.toast-wrap{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);z-index:999;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.toast{background:var(--dark);color:white;border-radius:100px;padding:10px 20px;font-size:13px;font-weight:500;box-shadow:var(--shadow-lg);animation:toastIn .3s ease;white-space:nowrap;border:1px solid rgba(255,255,255,0.08);font-family:var(--fb)}
+.toast.success{background:var(--green)}
+.toast.error{background:var(--coral)}
+@keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── SPINNER ── */
+.spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,0.3);border-top-color:white;border-radius:50%;animation:spin .6s linear infinite;display:inline-block;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── SETTINGS ── */
+.scroll-body{flex:1;overflow-y:auto;padding:14px 16px 0}
+.scroll-body::-webkit-scrollbar{display:none}
+.section-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;font-weight:600}
+.settings-card{background:var(--white);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow);margin-bottom:12px}
+.hero-topbar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
+.hero-greet{font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px}
+.icon-btn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:100px;padding:6px 12px;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;font-family:var(--fb)}
+/* ── GOALS ── */
+.goal-card{background:var(--white);border-radius:16px;padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow)}
+.gc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px}
+.gc-name{font-size:14px;font-weight:600;color:var(--dark)}
+.gc-pct{font-size:14px;font-weight:600;color:var(--green)}
+.gc-contrib{display:flex;gap:8px;margin-top:10px}
+.gc-input{flex:1;background:var(--cream);border:1.5px solid rgba(0,0,0,.08);border-radius:10px;padding:8px 12px;font-family:var(--fb);font-size:12px;color:var(--dark);outline:none}
+.gc-btn{background:var(--green-light);color:var(--dark);border:none;border-radius:10px;padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fb)}
+/* ── TIMELINE ── */
+.tl-wrap{position:relative;padding-left:24px}
+.tl-wrap::before{content:'';position:absolute;left:5px;top:6px;bottom:6px;width:2px;background:linear-gradient(to bottom,var(--green-pale),rgba(0,0,0,.05));border-radius:2px}
+.tl-item{position:relative;padding-bottom:18px}
+.tl-item:last-child{padding-bottom:0}
+.tl-dot{position:absolute;left:-20px;top:4px;width:12px;height:12px;border-radius:50%;border:2px solid var(--cream)}
+.tl-item.done .tl-dot{background:var(--green);box-shadow:0 0 0 3px var(--green-pale)}
+.tl-item.warn .tl-dot{background:var(--coral);box-shadow:0 0 0 3px var(--coral-pale)}
+.tl-item.next .tl-dot{background:var(--cream);box-shadow:0 0 0 2px var(--green-light)}
+.tl-date{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.tl-event{font-weight:600;font-size:13px;color:var(--dark);margin-bottom:1px}
+.tl-detail{font-size:12px;color:var(--muted)}
+/* ── EXPENSE ROWS ── */
+.item-row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--green-pale)}
+.item-row:last-child{border-bottom:none}
+.item-cat{font-size:11px;font-weight:600;padding:3px 8px;border-radius:100px;background:var(--green-pale);color:var(--green);flex-shrink:0}
+.item-name{flex:1;font-size:13px;color:var(--dark);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.item-amount{font-size:13px;font-weight:600;color:var(--dark);flex-shrink:0}
+.item-del{background:none;border:none;cursor:pointer;color:var(--muted);padding:4px;border-radius:6px;flex-shrink:0}
+.item-del:hover{color:var(--coral);background:var(--coral-pale)}
+/* ── ICON ── */
+.zest-app-icon{width:30px;height:30px;background:linear-gradient(145deg,var(--dark),var(--dark-2));border:1px solid rgba(212,168,67,0.3);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.zest-icon-card{background:var(--cream);border-radius:5px;width:20px;height:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+.zest-icon-word{font-family:var(--fd);font-size:8px;font-style:italic;font-weight:400;background:linear-gradient(135deg,var(--gold-dark),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.zest-icon-dot{width:3px;height:3px;border-radius:50%;background:var(--gold)}
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo">Zest</div>
+    <div class="auth-tagline">Your money, handled. Your life, lived.</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('signin',this)">Sign in</button>
+      <button class="auth-tab" onclick="switchAuthTab('signup',this)">Create account</button>
+    </div>
+    <div class="auth-err" id="auth-err"></div>
+    <div id="auth-signin">
+      <div class="auth-field"><label class="auth-label">Email</label><input type="email" id="si-email" class="auth-input" placeholder="you@email.com" /></div>
+      <div class="auth-field"><label class="auth-label">Password</label><input type="password" id="si-password" class="auth-input" placeholder="••••••••" /></div>
+      <button class="auth-btn" id="si-btn" onclick="signIn()">Sign in</button>
+      <div class="auth-switch">No account? <a onclick="switchAuthTab('signup',null)">Create one free</a></div>
+    </div>
+    <div id="auth-signup" style="display:none">
+      <div class="auth-field"><label class="auth-label">Full name</label><input type="text" id="su-name" class="auth-input" placeholder="Your name" /></div>
+      <div class="auth-field"><label class="auth-label">Email</label><input type="email" id="su-email" class="auth-input" placeholder="you@email.com" /></div>
+      <div class="auth-field"><label class="auth-label">Password</label><input type="password" id="su-password" class="auth-input" placeholder="At least 8 characters" /></div>
+      <button class="auth-btn" id="su-btn" onclick="signUp()">Create account</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app-screen">
+  <div class="app">
+
+    <!-- ONBOARDING -->
+    <div class="screen ob-screen" id="screen-onboarding">
+      <div>
+        <div class="ob-logo">Zest</div>
+        <div class="ob-tag">Your money, handled. Your life, lived.</div>
+        <div class="ob-q">What does financial freedom feel like to you?</div>
+        <div class="ob-sub">Help us understand what matters — Zest does the rest.</div>
+      </div>
+      <div class="ob-opts">
+        <div class="ob-opt" onclick="selectOb(this)"><div class="ob-opt-icon">😮‍💨</div><div><div class="ob-opt-lbl">Less stress at month-end</div><div class="ob-opt-desc">Stop the panic before bills hit</div></div></div>
+        <div class="ob-opt" onclick="selectOb(this)"><div class="ob-opt-icon">🏦</div><div><div class="ob-opt-lbl">Save without thinking</div><div class="ob-opt-desc">Automate it and forget it</div></div></div>
+        <div class="ob-opt" onclick="selectOb(this)"><div class="ob-opt-icon">🔓</div><div><div class="ob-opt-lbl">Get out of debt faster</div><div class="ob-opt-desc">Clear what's weighing you down</div></div></div>
+        <div class="ob-opt" onclick="selectOb(this)"><div class="ob-opt-icon">🛡️</div><div><div class="ob-opt-lbl">Always covered for anything</div><div class="ob-opt-desc">Emergency fund peace of mind</div></div></div>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:10px;margin-top:18px;padding:0 2px">
+        <input type="checkbox" id="ob-consent" style="width:18px;height:18px;margin-top:1px;flex-shrink:0;accent-color:#52B788;cursor:pointer" />
+        <label for="ob-consent" style="font-size:12px;color:var(--muted);line-height:1.6;cursor:pointer">
+          I have read and agree to Zest's <span style="color:var(--green-light);text-decoration:underline;cursor:pointer" onclick="showLegal('privacy')">Privacy Policy</span> and <span style="color:var(--green-light);text-decoration:underline;cursor:pointer" onclick="showLegal('terms')">Terms of Use</span>. I understand that Zest is a budgeting tool, not a financial advisor.
+        </label>
+      </div>
+      <button class="ob-cta" onclick="finishOnboarding()" style="margin-top:14px">Let Zest take it from here →</button>
+      <p style="font-size:10px;color:var(--muted);text-align:center;margin-top:10px;opacity:.7">By continuing, you acknowledge Zest is a budgeting tool, not a financial advisor. <span style="text-decoration:underline;cursor:pointer" onclick="showLegal('disclaimer')">View full disclaimer</span></p>
+    </div>
+
+    <!-- HOME -->
+    <div class="screen" id="screen-home">
+      <div class="home-hero">
+        <div class="hero-topbar">
+          <div>
+            <div class="hero-greet" id="hero-greet">Good morning</div>
+            <div class="hero-name" id="hero-name">Welcome 👋</div>
+          </div>
+          <div class="hero-right">
+            <button class="privacy-btn" id="privacy-btn" onclick="togglePrivacy()">👁 Hide</button>
+            <div style="position:relative">
+              <div class="avatar-btn" id="avatar-btn" onclick="toggleAvatarMenu()"><span id="avatar-initials">?</span></div>
+              <div class="avatar-menu" id="avatar-menu">
+                <div class="avatar-menu-item" id="menu-name" style="font-weight:600;cursor:default;color:var(--green-light)">—</div>
+                <div style="height:1px;background:rgba(255,255,255,0.08);margin:4px 0"></div>
+                <div class="avatar-menu-item" onclick="showLegal('privacy');closeAvatarMenu()">🔒 Privacy Policy</div>
+                <div class="avatar-menu-item" onclick="showLegal('disclaimer');closeAvatarMenu()">⚖️ Legal Disclaimer</div>
+                <div class="avatar-menu-item" onclick="showLegal('terms');closeAvatarMenu()">📄 Terms of Use</div>
+                <div style="height:1px;background:rgba(255,255,255,0.08);margin:4px 0"></div>
+                <div class="avatar-menu-item danger" onclick="signOut()">↩ Sign out</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mood-card">
+          <div class="mood-icon" id="mood-icon">💚</div>
+          <div>
+            <div class="mood-status" id="mood-status">Loading...</div>
+            <div class="mood-sub" id="mood-sub">Checking your finances</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="notif-area"></div>
+
+      <div class="home-body" id="home-body">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div class="sec-lbl" style="margin-bottom:0">This month</div>
+        </div>
+
+        <div class="stat-row" id="stats-area">
+          <div class="stat-card">
+            <div class="stat-lbl">Income</div>
+            <div class="stat-val green" id="m-income">R 0</div>
+            <div class="stat-trend muted">Monthly net</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-lbl">Expenses</div>
+            <div class="stat-val" id="m-exp">R 0</div>
+            <div class="stat-trend muted" id="m-exp-trend">This month</div>
+          </div>
+        </div>
+
+        <div class="budget-card" id="budget-area">
+          <div class="budget-top">
+            <div class="budget-label">Monthly budget</div>
+            <div class="budget-amount bar-amount" id="budget-amount">R 0 / R 0</div>
+          </div>
+          <div class="bar-track"><div class="bar-fill" id="bar-fill" style="width:0%"></div></div>
+          <div class="budget-sub" id="budget-sub">Set your income to get started</div>
+        </div>
+
+        <div class="debt-teaser" onclick="showScreen('debt')" id="debt-teaser">
+          <div class="dt-icon">🔓</div>
+          <div>
+            <div class="dt-title">Debt Freedom Tracker</div>
+            <div class="debt-sub-text" id="debt-teaser-sub">Add your debts to see your plan</div>
+          </div>
+          <div class="dt-arrow">›</div>
+        </div>
+
+        <div class="sec-lbl" style="margin-top:4px">Quick actions</div>
+        <div class="quick-grid">
+          <div class="quick-card" onclick="showScreen('home')">
+            <div class="quick-icon">💰</div>
+            <div class="quick-label">Set income</div>
+            <div class="quick-sub">Update monthly pay</div>
+          </div>
+          <div class="quick-card" onclick="showScreen('home')">
+            <div class="quick-icon">🛒</div>
+            <div class="quick-label">Add expense</div>
+            <div class="quick-sub">Log a purchase</div>
+          </div>
+          <div class="quick-card" onclick="showScreen('growth')">
+            <div class="quick-icon">🌱</div>
+            <div class="quick-label">My growth</div>
+            <div class="quick-sub">Wins & milestones</div>
+          </div>
+          <div class="quick-card" onclick="showScreen('nudges')">
+            <div class="quick-icon">⚡</div>
+            <div class="quick-label">Nudges</div>
+            <div class="quick-sub">Tips & reminders</div>
+          </div>
+        </div>
+
+        <div class="voice-card" onclick="showScreen('voice')">
+          <div class="voice-mic" id="home-voice-mic">🎤</div>
+          <div>
+            <div class="voice-title">Talk to Zest</div>
+            <div class="voice-sub" id="home-voice-sub">"Coffee at Vida R45 — can I afford it?"</div>
+          </div>
+          <div class="voice-arrow">→</div>
+        </div>
+        <div style="height:16px"></div>
+      </div>
+
+      <div class="nav">
+        <button class="nav-btn active" id="nb-home" onclick="showScreen('home',this)"><span class="ni">🏠</span>Home<div class="nav-dot"></div></button>
+        <button class="nav-btn" id="nb-nudges" onclick="showScreen('nudges',this)"><span class="ni">⚡</span>Nudges<div class="nav-dot"></div></button>
+        <button class="nav-btn" id="nb-voice" onclick="showScreen('voice',this)"><span class="ni">🎤</span>Talk<div class="nav-dot"></div></button>
+        <button class="nav-btn" id="nb-debt" onclick="showScreen('debt',this)"><span class="ni">🔓</span>Debt<div class="nav-dot"></div></button>
+        <button class="nav-btn" id="nb-growth" onclick="showScreen('growth',this)"><span class="ni">🌱</span>Growth<div class="nav-dot"></div></button>
+      </div>
+    </div>
+
+    <!-- NUDGES -->
+    <div class="screen" id="screen-nudges">
+      <div class="nudge-hero">
+        <div class="nudge-title">Your nudges ⚡</div>
+        <div class="nudge-sub">Personalised tips to keep you on track</div>
+      </div>
+      <div class="nudge-body" id="nudge-list">
+        <div class="nudge-card g">
+          <div class="nc-icon">🌅</div>
+          <div>
+            <div class="nc-title">Good morning! Start your day with intention</div>
+            <div class="nc-meta">Today's budget check — you're doing great</div>
+            <div class="nc-action">→ View your finances</div>
+          </div>
+        </div>
+        <div class="nudge-card gold">
+          <div class="nc-icon">📝</div>
+          <div>
+            <div class="nc-title">Log today's purchases before you forget</div>
+            <div class="nc-meta">Evening reminder — takes 30 seconds</div>
+            <div class="nc-action">→ Add expenses</div>
+          </div>
+        </div>
+        <div class="nudge-card coral">
+          <div class="nc-icon">💳</div>
+          <div>
+            <div class="nc-title">Your debt payment is due soon</div>
+            <div class="nc-meta">Stay ahead — don't let interest stack up</div>
+            <div class="nc-action">→ View debt tracker</div>
+          </div>
+        </div>
+        <div class="nudge-card g">
+          <div class="nc-icon">🎯</div>
+          <div>
+            <div class="nc-title">You're on track with your savings goal</div>
+            <div class="nc-meta">Keep it up — financial freedom is closer than you think</div>
+            <div class="nc-action">→ See your growth</div>
+          </div>
+        </div>
+        <div class="nudge-card gold">
+          <div class="nc-icon">🛍️</div>
+          <div>
+            <div class="nc-title">Before you buy — ask Zest first</div>
+            <div class="nc-meta">Use the voice check to make smarter decisions</div>
+            <div class="nc-action">→ Talk to Zest</div>
+          </div>
+        </div>
+      </div>
+      <div style="padding:10px 16px 0;text-align:center">
+        <p style="font-size:10px;color:var(--muted);line-height:1.5;font-style:italic">Zest's nudges are based on the data you enter. They are informational only and do not constitute personalised financial advice. <span style="text-decoration:underline;cursor:pointer" onclick="showLegal('disclaimer')">View full disclaimer</span></p>
+      </div>
+      <div class="nav">
+        <button class="nav-btn" onclick="showScreen('home',this)"><span class="ni">🏠</span>Home<div class="nav-dot"></div></button>
+        <button class="nav-btn active" onclick="showScreen('nudges',this)"><span class="ni">⚡</span>Nudges<div class="nav-dot"></div></button>
+        <button class="nav-btn" onclick="showScreen('voice',this)"><span class="ni">🎤</span>Talk<div class="nav-dot"></div></button>
+        <button class="nav-btn" onclick="showScreen('debt',this)"><span class="ni">🔓</span>Debt<div class="nav-dot"></div></button>
+        <button class="nav-btn" onclick="showScreen('growth',this)"><span class="ni">🌱</span>Growth<div class="nav-dot"></div></button>
+      </div>
+    </div>
+
+    <!-- VOICE -->
+    <div class="screen" id="screen-voice">
+      <div class="voice-screen-hero">
+        <div class="voice-screen-title">Talk to Zest 🎤</div>
+        <div class="voice-screen-sub">Speak your purchase — get an instant answer</div>
+      </div>
+      <div class="voice-screen-body">
+        <div class="big-mic" id="big-mic" onclick="toggleVoice()">🎤</div>
+        <div class="mic-hint" id="mic-hint">Tap the mic and say something like<br><em>"Coffee at Vida R45, should I?"</em></div>
+        <div class="transcript-box" id="transcript-box" style="display:none"></div>
+        <div id="voice-result-area" style="width:100%"></div>
+      </div>
+      <div class="nav">
+        <button class="nav-btn" onclick="showScreen('home',this)"><span class="ni">🏠</span>Home<div class="nav-dot"></div></button>
+        <button class="nav-btn" onclick="showScreen('nudges',this)"><span class="ni">⚡</span>Nudges<div class="nav-dot"></div></button>
+        <button class="nav-btn active" onclick="showScreen('voice',this)"><span class="ni">🎤</span>Talk<div class="nav-dot"></div></button>
+        <button class="nav-btn" onclick="showScreen('debt',this)"><span class="ni">🔓</span>Debt<div class="nav-dot"></div></button>
+        <button class="nav-btn" onclick="showScreen('growth',this)"><span class="ni">🌱</span>Growth<div class="nav-dot"></div></button>
+      </div>
+    </div>
+
+    <!-- DEBT -->
+    <div class="screen" id="screen-debt">
+      <div class="debt-hero">
+        <div class="dh-top">
+          <div>
+            <div class="dh-label">Debt freedom tracker</div>
+            <div class="dh-title">Clear what's <em>weighing</em> you down</div>
+          </div>
+          <button class="add-debt-btn" onclick="openAddDebt()">+ Add debt</button>
+        </div>
+        <div class="sum-row">
+          <div class="sum-pill"><div class="sp-lbl">Total debt</div><div class="sp-val coral" id="total-debt-val">R 0</div></div>
+          <div class="sum-pill"><div class="sp-lbl">Min/month</div><div class="sp-val" id="total-min-val">R 0</div></div>
+          <div class="sum-pill"><div class="sp-lbl">Extra/month</div><div class="sp-val green" id="extra-pay-val">R 0</div></div>
+        </div>
+      </div>
+
+      <div style="margin:10px 16px 0;background:rgba(212,168,67,0.08);border:1px solid rgba(212,168,67,0.18);border-radius:12px;padding:10px 14px;display:flex;gap:8px;align-items:flex-start">
+        <span style="font-size:16px;flex-shrink:0">ℹ️</span>
+        <p style="font-size:11px;color:#7c5800;line-height:1.6">The strategies below show your options and what each means for your finances. Zest helps you understand the numbers — <span style="font-weight:600">a financial advisor can help you act on them.</span></p>
+      </div>
+      <div class="strat-tabs">
+        <button class="stab active" id="stab-snowball" onclick="setStrategy('snowball',this)">⛄ Snowball</button>
+        <button class="stab" id="stab-avalanche" onclick="setStrategy('avalanche',this)">🏔 Avalanche</button>
+        <button class="stab" id="stab-smart" onclick="setStrategy('smart',this)">⚡ Zest Smart</button>
+      </div>
+
+      <div class="extra-box" id="extra-power-box" style="display:none">
+        <div class="extra-icon">💪</div>
+        <div id="extra-power-text"><div class="extra-title">Extra payment power</div><div class="extra-sub">Loading...</div></div>
+      </div>
+
+      <div class="debt-list" id="debt-list">
+        <div style="text-align:center;padding:40px 20px;color:var(--muted)">
+          <div style="font-size:36px;margin-bottom:10px">🔓</div>
+          <div style="font-size:14px;font-weight:600;color:var(--mid);margin-bottom:4px">No debts added yet</div>
+          <div style="font-size:12px">Tap "+ Add debt" to start your freedom journey</div>
+        </div>
+      </div>
+
+      <div class="nav">
+        <button class="nav-btn" onclick="showScreen('home',this)"><span class="ni">🏠</span>Home<div class="nav-dot"></div></button>
+        <button class="nav-btn" onclick="showScreen('nudges',this)"><span class="ni">⚡</span>Nudges<div class="nav-dot"></div></button>
+        <button class="nav-btn" onclick="showScreen('voice',this)"><span class="ni">🎤</span>Talk<div class="nav-dot"></div></button>
+        <button class="nav-btn active" onclick="showScreen('debt',this)"><span class="ni">🔓</span>Debt<div class="nav-dot"></div></button>
+        <button class="nav-btn" onclick="showScreen('growth',this)"><span class="ni">🌱</span>Growth<div class="nav-dot"></div></button>
+      </div>
+    </div>
+
+    <!-- GROWTH -->
+    <div class="screen" id="screen-growth">
+      <div class="growth-hero">
+        <div class="gr-title">Your financial growth 🌱</div>
+        <div class="gr-stage">
+          <div class="gr-sicon" id="gr-sicon">🌿</div>
+          <div style="flex:1">
+            <div class="gr-slbl">Current stage</div>
+            <div class="gr-sname" id="gr-sname">Growing — keep going</div>
+            <div class="gr-bar-track"><div class="gr-bar-fill" id="gr-bar" style="width:40%"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="growth-body">
+        <div class="sec-lbl">Wins this month</div>
+        <div id="wins-list">
+          <div class="win-card"><div class="win-icon">🏆</div><div><div class="win-title">Started your financial journey</div><div class="win-sub">The first step is always the hardest</div></div><div class="win-badge">NEW</div></div>
+          <div class="win-card"><div class="win-icon">💪</div><div><div class="win-title">Using Zest to track finances</div><div class="win-sub">Awareness is the first step to wealth</div></div><div class="win-badge">✓</div></div>
+        </div>
+        <div class="recap" id="recap-card">
+          <div class="recap-lbl">Zest surplus this month</div>
+          <div class="recap-val" id="recap-val">R 0</div>
+          <div class="recap-sub" id="recap-sub">Set your income and expenses to see your surplus</div>
+        </div>
+        <div class="debt-cleared" id="debt-cleared-card">
+          <div class="dc2-lbl">Total debt to clear</div>
+          <div class="dc2-val" id="debt-cleared-val">R 0</div>
+          <div class="dc2-sub" id="debt-cleared-sub">Add your debts to see your debt-free date 🎯</div>
+        </div>
+      </div>
+      <div class="nav">
+        <button class="nav-btn" onclick="showScreen('home',this)"><span class="ni">🏠</span>Home<div class="nav-dot"></div></button>
+        <button class="nav-btn" onclick="showScreen('nudges',this)"><span class="ni">⚡</span>Nudges<div class="nav-dot"></div></button>
+        <button class="nav-btn" onclick="showScreen('voice',this)"><span class="ni">🎤</span>Talk<div class="nav-dot"></div></button>
+        <button class="nav-btn" onclick="showScreen('debt',this)"><span class="ni">🔓</span>Debt<div class="nav-dot"></div></button>
+        <button class="nav-btn active" onclick="showScreen('growth',this)"><span class="ni">🌱</span>Growth<div class="nav-dot"></div></button>
+      </div>
+    </div>
+
+    <!-- LEGAL MODAL -->
+    <div class="modal-overlay" id="legal-modal">
+      <div class="modal-sheet" style="max-height:90vh">
+        <div class="sh-handle"></div>
+        <div id="legal-content"></div>
+        <span class="cancel-lnk" onclick="closeLegal()">Close</span>
+      </div>
+    </div>
+
+    <!-- ADD DEBT MODAL -->
+    <div class="modal-overlay" id="add-debt-modal">
+      <div class="modal-sheet">
+        <div class="sh-handle"></div>
+        <div class="modal-title">Add a debt</div>
+        <div class="modal-sub">Every debt you add brings you closer to freedom</div>
+        <div class="fg"><label class="fl">Debt name</label><input class="fi" id="d-name" placeholder="e.g. ID Clothing Account" /></div>
+        <div class="fg"><label class="fl">Type / Lender</label><input class="fi" id="d-type" placeholder="e.g. Edgars, FNB" /></div>
+        <div class="fg"><label class="fl">Icon</label>
+          <select class="fi" id="d-icon">
+            <option value="💳">💳 Credit / Store card</option>
+            <option value="🏠">🏠 Home loan</option>
+            <option value="🚗">🚗 Vehicle loan</option>
+            <option value="🏦">🏦 Personal loan</option>
+            <option value="📱">📱 Device / tech</option>
+            <option value="📦">📦 Other</option>
+          </select>
+        </div>
+        <div class="f-row">
+          <div class="fg"><label class="fl">Balance (R)</label><input class="fi" type="number" id="d-balance" placeholder="1500" /></div>
+          <div class="fg"><label class="fl">Interest % p.a.</label><input class="fi" type="number" id="d-rate" placeholder="21.5" step="0.1" /></div>
+        </div>
+        <div class="fg"><label class="fl">Min monthly payment (R)</label><input class="fi" type="number" id="d-min" placeholder="350" /></div>
+        <button class="submit-btn" onclick="addDebt()">Add to my tracker ✓</button>
+        <span class="cancel-lnk" onclick="closeAddDebt()">Cancel</span>
+      </div>
+    </div>
+
+
+  <!-- SETTINGS SCREEN -->
+  <div class="screen" id="screen-settings">
+    <div class="hero">
+      <div class="hero-topbar">
+        <div><div class="hero-greet">Account</div><div style="font-family:var(--fd);font-size:22px;color:var(--white);font-weight:300">Settings</div></div>
+        <button class="icon-btn" onclick="showScreen('home')">← Back</button>
+      </div>
+    </div>
+    <div class="scroll-body" style="padding-top:12px">
+      <div class="section-lbl">Profile</div>
+      <div class="settings-card">
+        <div class="field"><label class="fl">Full name</label><input class="fi" id="set-name" placeholder="Your name"/></div>
+        <div class="field"><label class="fl">Email</label><input class="fi" id="set-email" disabled style="opacity:.6"/></div>
+        <button class="submit-btn" onclick="saveProfile()">Save profile</button>
+      </div>
+      <div class="section-lbl">Finances</div>
+      <div class="settings-card">
+        <div class="field"><label class="fl">Net monthly income (R)</label><input class="fi" type="number" id="set-income" placeholder="e.g. 25000"/></div>
+        <div class="field"><label class="fl">Savings rate target</label>
+          <select class="fi" id="set-rate">
+            <option value="10">10% — starter</option>
+            <option value="20" selected>20% — recommended</option>
+            <option value="30">30% — aggressive</option>
+            <option value="50">50% — FIRE mode</option>
+          </select>
+        </div>
+        <button class="submit-btn" onclick="saveFinances()">Save finances</button>
+      </div>
+      <div class="section-lbl">Expenses</div>
+      <div class="settings-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div style="font-size:13px;font-weight:600;color:var(--dark)">Monthly expenses</div>
+          <button style="background:var(--green-pale);color:var(--green);border:none;border-radius:100px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--fb)" onclick="openAddExpense()">+ Add</button>
+        </div>
+        <div id="exp-list-settings"><div style="font-size:12px;color:var(--muted);text-align:center;padding:12px 0">No expenses added yet</div></div>
+        <div style="font-size:12px;font-weight:600;color:var(--dark);margin-top:10px;padding-top:10px;border-top:1px solid var(--green-pale);display:flex;justify-content:space-between"><span>Total monthly</span><span id="exp-total-settings">R 0</span></div>
+      </div>
+      <div class="section-lbl">Legal</div>
+      <div class="settings-card">
+        <div style="cursor:pointer;padding:10px 0;border-bottom:1px solid var(--green-pale);display:flex;justify-content:space-between;font-size:13px;color:var(--dark)" onclick="showLegal('privacy')">🔒 Privacy Policy <span style="color:var(--muted)">›</span></div>
+        <div style="cursor:pointer;padding:10px 0;border-bottom:1px solid var(--green-pale);display:flex;justify-content:space-between;font-size:13px;color:var(--dark)" onclick="showLegal('disclaimer')">⚖️ Financial Disclaimer <span style="color:var(--muted)">›</span></div>
+        <div style="cursor:pointer;padding:10px 0;display:flex;justify-content:space-between;font-size:13px;color:var(--dark)" onclick="showLegal('terms')">📄 Terms of Use <span style="color:var(--muted)">›</span></div>
+        <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--green-pale);text-align:center;font-size:10px;color:var(--muted)">© 2026 Stratlink Pty Ltd · Zest App</div>
+      </div>
+      <div class="section-lbl">Danger zone</div>
+      <div class="settings-card" style="margin-bottom:20px">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Permanently delete your Zest account and all data.</div>
+        <button style="background:var(--coral-pale);color:var(--coral);border:none;border-radius:12px;padding:12px;font-family:var(--fb);font-size:13px;font-weight:600;width:100%;cursor:pointer" onclick="deleteAccount()">Delete my account</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- GOALS SCREEN -->
+  <div class="screen" id="screen-goals">
+    <div class="hero">
+      <div class="hero-topbar">
+        <div><div class="hero-greet">Savings goals</div><div style="font-family:var(--fd);font-size:22px;color:var(--white);font-weight:300">Build your <em style="color:var(--gold);font-style:italic">future</em></div></div>
+        <button style="background:rgba(82,183,136,.15);border:1px solid rgba(82,183,136,.3);color:var(--green-light);font-family:var(--fb);font-size:12px;font-weight:600;padding:7px 14px;border-radius:100px;cursor:pointer" onclick="openAddGoal()">+ Add goal</button>
+      </div>
+      <div style="display:flex;gap:8px">
+        <div style="flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:10px 12px"><div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">Total saved</div><div style="font-family:var(--fd);font-size:17px;color:var(--green-light)" id="g-total-saved">R 0</div></div>
+        <div style="flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:10px 12px"><div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">To target</div><div style="font-family:var(--fd);font-size:17px;color:var(--white)" id="g-to-target">R 0</div></div>
+      </div>
+    </div>
+    <div class="scroll-body" id="goals-list" style="padding-top:10px">
+      <div style="text-align:center;padding:40px 20px;color:var(--muted)"><div style="font-size:36px;margin-bottom:10px">🎯</div><div style="font-size:14px;font-weight:600;color:var(--mid);margin-bottom:4px">No goals yet</div><div style="font-size:12px">Tap "+ Add goal" to set your first savings target</div></div>
+    </div>
+    <div class="nav">
+      <button class="nav-btn" onclick="showScreen('home',this)"><span class="ni">🏠</span>Home<div class="nav-dot"></div></button>
+      <button class="nav-btn" onclick="showScreen('nudges',this)"><span class="ni">⚡</span>Nudges<div class="nav-dot"></div></button>
+      <button class="nav-btn" onclick="showScreen('voice',this)"><span class="ni">🎤</span>Talk<div class="nav-dot"></div></button>
+      <button class="nav-btn" onclick="showScreen('debt',this)"><span class="ni">🔓</span>Debt<div class="nav-dot"></div></button>
+      <button class="nav-btn" onclick="showScreen('growth',this)"><span class="ni">🌱</span>Growth<div class="nav-dot"></div></button>
+    </div>
+  </div>
+
+  <!-- TIMELINE SCREEN -->
+  <div class="screen" id="screen-timeline">
+    <div class="hero">
+      <div class="hero-topbar">
+        <div><div class="hero-greet">Your journey</div><div style="font-family:var(--fd);font-size:22px;color:var(--white);font-weight:300">Green <em style="color:var(--green-light);font-style:italic">timeline</em></div></div>
+      </div>
+    </div>
+    <div class="scroll-body" style="padding-top:10px">
+      <div id="timeline-content"><div style="text-align:center;padding:40px 20px;color:var(--muted)"><div style="font-size:36px;margin-bottom:10px">🗓️</div><div style="font-size:12px">Set your income, expenses and goals to see your timeline</div></div></div>
+      <div style="height:14px"></div>
+    </div>
+    <div class="nav">
+      <button class="nav-btn" onclick="showScreen('home',this)"><span class="ni">🏠</span>Home<div class="nav-dot"></div></button>
+      <button class="nav-btn" onclick="showScreen('nudges',this)"><span class="ni">⚡</span>Nudges<div class="nav-dot"></div></button>
+      <button class="nav-btn" onclick="showScreen('voice',this)"><span class="ni">🎤</span>Talk<div class="nav-dot"></div></button>
+      <button class="nav-btn" onclick="showScreen('debt',this)"><span class="ni">🔓</span>Debt<div class="nav-dot"></div></button>
+      <button class="nav-btn" onclick="showScreen('growth',this)"><span class="ni">🌱</span>Growth<div class="nav-dot"></div></button>
+    </div>
+  </div>
+
+  <!-- ADD EXPENSE MODAL -->
+  <div class="modal-overlay" id="add-expense-modal">
+    <div class="modal-sheet">
+      <div class="sh-handle"></div>
+      <div class="modal-title">Add an expense</div>
+      <div class="modal-sub">Log what you spend each month</div>
+      <div class="fg"><label class="fl">Name</label><input class="fi" id="e-name" placeholder="e.g. Rent, Netflix, Groceries..."/></div>
+      <div class="f-row">
+        <div class="fg"><label class="fl">Amount (R)</label><input class="fi" type="number" id="e-amount" placeholder="8500"/></div>
+        <div class="fg"><label class="fl">Category</label>
+          <select class="fi" id="e-cat">
+            <option>🏠 Housing</option><option>🛒 Food</option><option>🚌 Transport</option>
+            <option>💡 Utilities</option><option>❤️ Health</option><option>📚 Education</option>
+            <option>🎬 Entertainment</option><option>👗 Clothing</option><option>💳 Debt</option><option>📦 Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">Frequency</label>
+        <select class="fi" id="e-freq">
+          <option value="monthly">Monthly (fixed)</option>
+          <option value="weekly">Weekly (×4.33)</option>
+          <option value="once">Once-off (÷12)</option>
+        </select>
+      </div>
+      <button class="submit-btn" onclick="addExpense()">Add expense ✓</button>
+      <span class="cancel-lnk" onclick="closeModal('add-expense-modal')">Cancel</span>
+    </div>
+  </div>
+
+  <!-- ADD GOAL MODAL -->
+  <div class="modal-overlay" id="add-goal-modal">
+    <div class="modal-sheet">
+      <div class="sh-handle"></div>
+      <div class="modal-title">Add a savings goal</div>
+      <div class="modal-sub">Every goal starts with a number</div>
+      <div class="fg"><label class="fl">Goal name</label><input class="fi" id="g-name" placeholder="e.g. Emergency fund, Holiday, Car..."/></div>
+      <div class="f-row">
+        <div class="fg"><label class="fl">Target (R)</label><input class="fi" type="number" id="g-target" placeholder="50000"/></div>
+        <div class="fg"><label class="fl">Saved so far (R)</label><input class="fi" type="number" id="g-saved" placeholder="5000"/></div>
+      </div>
+      <div class="fg"><label class="fl">Category</label>
+        <select class="fi" id="g-cat">
+          <option>🛡️ Emergency fund</option><option>✈️ Travel</option><option>🏠 Property</option>
+          <option>🚗 Vehicle</option><option>🎓 Education</option><option>🌴 Retirement</option>
+          <option>💼 Business</option><option>💻 Tech</option><option>⭐ Other</option>
+        </select>
+      </div>
+      <button class="submit-btn" onclick="addGoal()">Add goal ✓</button>
+      <span class="cancel-lnk" onclick="closeModal('add-goal-modal')">Cancel</span>
+    </div>
+  </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<script>
+// ─── CONFIG ───────────────────────────────
+const SUPABASE_URL = 'https://vjjbfrkldngpycnahszh.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_JeHRbSVdecXLSh1dP4hEjQ_duVNGma9';
+
+// ─── INIT ─────────────────────────────────
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: { persistSession: true, autoRefreshToken: true, storage: localStorage, storageKey: 'zest_session' }
+});
+
+// ─── STATE ────────────────────────────────
+const S = {
+  user: null, profile: {}, income: 0, saveRate: 20,
+  expenses: [], goals: [], debts: [], strategy: 'snowball',
+  privacy: false
+};
+
+const fmt = n => 'R ' + Math.round(n).toLocaleString('en-ZA');
+
+// ─── AUTH ─────────────────────────────────
+function switchAuthTab(tab, btn) {
+  document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  else document.querySelectorAll('.auth-tab')[tab==='signin'?0:1].classList.add('active');
+  document.getElementById('auth-signin').style.display = tab==='signin' ? 'block' : 'none';
+  document.getElementById('auth-signup').style.display = tab==='signup' ? 'block' : 'none';
+  document.getElementById('auth-err').style.display = 'none';
+}
+
+function showAuthErr(msg) {
+  const el = document.getElementById('auth-err');
+  el.textContent = msg; el.style.display = 'block';
+}
+
+async function signIn() {
+  const email = document.getElementById('si-email').value.trim();
+  const pass = document.getElementById('si-password').value;
+  const btn = document.getElementById('si-btn');
+  btn.innerHTML = '<div class="spinner"></div> Signing in...'; btn.disabled = true;
+  const t = setTimeout(() => { btn.innerHTML='Sign in'; btn.disabled=false; showAuthErr('Connection slow — try again'); }, 10000);
+  const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+  clearTimeout(t);
+  if (error) { showAuthErr(error.message); btn.innerHTML='Sign in'; btn.disabled=false; }
+}
+
+async function signUp() {
+  const name = document.getElementById('su-name').value.trim();
+  const email = document.getElementById('su-email').value.trim();
+  const pass = document.getElementById('su-password').value;
+  if (!name||!email||pass.length<8) { showAuthErr('Fill all fields. Password needs 8+ characters.'); return; }
+  const btn = document.getElementById('su-btn');
+  btn.innerHTML = '<div class="spinner"></div>'; btn.disabled = true;
+  const { error } = await sb.auth.signUp({ email, password: pass, options: { data: { full_name: name } } });
+  if (error) { showAuthErr(error.message); }
+  else { showAuthErr('✅ Check your email to confirm, then sign in.'); }
+  btn.innerHTML='Create account'; btn.disabled=false;
+}
+
+function signOut() {
+  try { localStorage.removeItem('zest_session'); localStorage.removeItem('zest_cache'); } catch(e) {}
+  S.user=null; S.debts=[]; S.expenses=[]; S.profile={};
+  document.getElementById('app-screen').style.display='none';
+  document.getElementById('auth-screen').style.display='flex';
+  sb.auth.signOut().catch(()=>{});
+}
+
+// ─── BOOT ─────────────────────────────────
+(function instantBoot() {
+  try {
+    const raw = localStorage.getItem('zest_session');
+    if (!raw) return;
+    const sess = JSON.parse(raw);
+    const user = sess?.user || sess?.currentSession?.user;
+    if (!user) return;
+    S.user = user;
+    const cache = JSON.parse(localStorage.getItem('zest_cache')||'{}');
+    if (cache.profile) {
+      Object.assign(S, cache);
+      document.getElementById('auth-screen').style.display='none';
+      document.getElementById('app-screen').style.display='block';
+      renderAll(); checkOnboarding();
+    }
+  } catch(e){}
+})();
+
+sb.auth.onAuthStateChange(async (event, session) => {
+  if (session?.user) {
+    S.user = session.user;
+    document.getElementById('auth-screen').style.display='none';
+    document.getElementById('app-screen').style.display='block';
+    const cache = JSON.parse(localStorage.getItem('zest_cache')||'{}');
+    if (cache.profile) { Object.assign(S, cache); renderAll(); checkOnboarding(); syncFromServer(); }
+    else { await syncFromServer(); checkOnboarding(); }
+  } else if (event==='SIGNED_OUT') {
+    document.getElementById('auth-screen').style.display='flex';
+    document.getElementById('app-screen').style.display='none';
+  }
+});
+
+async function syncFromServer_old() {
+  if (!S.user) return;
+  const uid = S.user.id;
+  const [profRes, debtRes] = await Promise.all([
+    sb.from('profiles').select('*').eq('id', uid).single(),
+    sb.from('debts').select('*').eq('user_id', uid).eq('is_active', true).order('current_balance')
+  ]);
+  if (profRes.data) { S.profile = profRes.data; S.income = profRes.data.monthly_income || 0; S.saveRate = profRes.data.save_rate || 20; }
+  if (debtRes.data) S.debts = debtRes.data;
+  saveCache(); renderAll();
+}
+
+function saveCache() {
+  try { localStorage.setItem('zest_cache', JSON.stringify({ profile: S.profile, income: S.income, saveRate: S.saveRate, debts: S.debts })); } catch(e){}
+}
+
+// ─── ONBOARDING ───────────────────────────
+function checkOnboarding() {
+  const done = localStorage.getItem('zest_ob_done');
+  if (!done) { showScreen('onboarding'); } else { showScreen('home'); }
+}
+
+function selectOb(el) {
+  document.querySelectorAll('.ob-opt').forEach(o => o.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+function finishOnboarding() {
+  const cb = document.getElementById('ob-consent');
+  if (cb && !cb.checked) {
+    cb.closest('div').style.border = '1px solid var(--coral)';
+    cb.closest('div').style.borderRadius = '10px';
+    cb.closest('div').style.padding = '8px';
+    toast('Please read and agree to the Privacy Policy to continue', 'error');
+    return;
+  }
+  localStorage.setItem('zest_ob_done', '1');
+  showScreen('home');
+}
+
+// ─── NAVIGATION ───────────────────────────
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById('screen-' + name);
+  if (el) el.classList.add('active');
+  if (name==='debt') renderDebts();
+  if (name==='growth') renderGrowth();
+  if (name==='home') renderHome();
+}
+
+// ─── RENDER ALL ───────────────────────────
+function renderAll() {
+  setupUserDisplay();
+  renderHome();
+  setSmartNotif();
+}
+
+function setupUserDisplay() {
+  const name = S.profile.full_name || S.user?.email || 'there';
+  const fname = name.split(' ')[0];
+  const initials = name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('avatar-initials').textContent = initials;
+  document.getElementById('menu-name').textContent = name;
+  const hr = new Date().getHours();
+  const greet = hr<12?'Good morning':hr<17?'Good afternoon':'Good evening';
+  document.getElementById('hero-greet').textContent = greet;
+  document.getElementById('hero-name').textContent = `${fname} 👋`;
+}
+
+function renderHome() {
+  const totalDebt = S.debts.reduce((s,d) => s+d.current_balance, 0);
+  const totalMin = S.debts.reduce((s,d) => s+d.minimum_payment, 0);
+  const surplus = S.income - totalMin;
+  const pct = S.income>0 ? Math.min(100, Math.round((totalMin/S.income)*100)) : 0;
+
+  document.getElementById('m-income').textContent = S.privacy ? '••••' : fmt(S.income);
+  document.getElementById('m-exp').textContent = S.privacy ? '••••' : fmt(totalMin);
+  document.getElementById('budget-amount').textContent = S.privacy ? '•••• / ••••' : `${fmt(totalMin)} / ${fmt(S.income)}`;
+  document.getElementById('bar-fill').style.width = pct + '%';
+  document.getElementById('budget-sub').textContent = S.income > 0
+    ? `${pct}% of income on expenses · ${fmt(Math.max(0,surplus))} surplus`
+    : 'Update your income in Settings';
+
+  // Debt teaser
+  if (S.debts.length > 0) {
+    document.getElementById('debt-teaser-sub').textContent = S.privacy ? '•••• remaining · Tap to see your plan' : `${fmt(totalDebt)} remaining · Tap to see your plan`;
+  }
+
+  // Mood
+  const score = S.income>0 ? Math.min(100, Math.max(0, Math.round((surplus/S.income)*100+50))) : 30;
+  if (score >= 60) { document.getElementById('mood-icon').textContent='💚'; document.getElementById('mood-status').textContent="You're on track"; document.getElementById('mood-sub').textContent='Nothing to worry about today'; }
+  else if (score >= 40) { document.getElementById('mood-icon').textContent='🟡'; document.getElementById('mood-status').textContent='Getting there'; document.getElementById('mood-sub').textContent='Small steps add up — keep going'; }
+  else { document.getElementById('mood-icon').textContent='🔴'; document.getElementById('mood-status').textContent='Let\'s work on this'; document.getElementById('mood-sub').textContent='Zest has tips to help you improve'; }
+
+  // Growth recap
+  document.getElementById('recap-val').textContent = S.privacy ? '••••' : fmt(Math.max(0, surplus));
+  document.getElementById('debt-cleared-val').textContent = S.privacy ? '••••' : fmt(totalDebt);
+}
+
+// ─── PRIVACY ──────────────────────────────
+function togglePrivacy() {
+  S.privacy = !S.privacy;
+  document.getElementById('privacy-btn').textContent = S.privacy ? '👁 Show' : '👁 Hide';
+  renderHome();
+}
+
+// ─── SMART NOTIFICATION ───────────────────
+function setSmartNotif() {
+  const hr = new Date().getHours();
+  const area = document.getElementById('notif-area');
+  let icon, type, title, sub;
+  if (hr >= 5 && hr < 12) {
+    icon='🌅'; type='morning'; title='Good morning! Ready to take control today?';
+    sub=`You have ${fmt(Math.max(0, S.income - S.debts.reduce((s,d)=>s+d.minimum_payment,0)))} available this month. Make it count!`;
+  } else if (hr >= 12 && hr < 17) {
+    icon='☀️'; type='afternoon'; title='Afternoon check-in — how\'s your spending?';
+    sub='Remember to check before any big purchase. Tap Talk to ask Zest.';
+  } else {
+    icon='🌙'; type='evening'; title='Evening reminder — log today\'s purchases';
+    sub='Takes 30 seconds. Staying aware is the biggest financial win.';
+  }
+  area.innerHTML = `<div class="notif-banner ${type}" style="margin:14px 16px 0"><div class="notif-icon">${icon}</div><div><div class="notif-title">${title}</div><div class="notif-sub">${sub}</div></div></div>`;
+}
+
+// ─── DEBTS ────────────────────────────────
+let debtStrategy = 'snowball';
+
+function setStrategy(s, btn) {
+  debtStrategy = s;
+  document.querySelectorAll('.stab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderDebts();
+}
+
+function calcMonths(balance, rate, payment) {
+  const r = rate/100/12;
+  if (r===0) return payment>0 ? Math.ceil(balance/payment) : Infinity;
+  if (payment<=balance*r) return Infinity;
+  return Math.ceil(-Math.log(1-(balance*r)/payment)/Math.log(1+r));
+}
+
+function calcInterest(balance, rate, payment) {
+  const m = calcMonths(balance,rate,payment);
+  if (m===Infinity) return Infinity;
+  return Math.max(0, payment*m - balance);
+}
+
+function renderDebts() {
+  const list = document.getElementById('debt-list');
+  const totalDebt = S.debts.reduce((s,d) => s+d.current_balance, 0);
+  const totalMin = S.debts.reduce((s,d) => s+d.minimum_payment, 0);
+  const surplus = Math.max(0, S.income - totalMin);
+
+  document.getElementById('total-debt-val').textContent = fmt(totalDebt);
+  document.getElementById('total-min-val').textContent = fmt(totalMin);
+  document.getElementById('extra-pay-val').textContent = fmt(surplus);
+
+  if (S.debts.length===0) {
+    list.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--muted)"><div style="font-size:36px;margin-bottom:10px">🔓</div><div style="font-size:14px;font-weight:600;color:var(--mid);margin-bottom:4px">No debts added yet</div><div style="font-size:12px">Tap "+ Add debt" to start your freedom journey</div></div>';
+    document.getElementById('extra-power-box').style.display='none';
+    return;
+  }
+
+  // Sort
+  const sorted = [...S.debts].sort((a,b) => {
+    if (debtStrategy==='snowball') return a.current_balance - b.current_balance;
+    if (debtStrategy==='avalanche') return b.interest_rate - a.interest_rate;
+    return (b.interest_rate*b.current_balance) - (a.interest_rate*a.current_balance);
+  }).map((d,i) => ({...d, focused: i===0}));
+
+  // Extra power
+  if (surplus > 0 && sorted.length > 0) {
+    const top = sorted[0];
+    const withExtra = calcMonths(top.current_balance, top.interest_rate, top.minimum_payment + surplus);
+    const withMin = calcMonths(top.current_balance, top.interest_rate, top.minimum_payment);
+    const saved = (withMin!==Infinity && withExtra!==Infinity) ? withMin-withExtra : null;
+    document.getElementById('extra-power-box').style.display='flex';
+    document.getElementById('extra-power-text').innerHTML = `<div class="extra-title">💪 Put ${fmt(surplus)}/mo extra towards ${top.name}</div><div class="extra-sub">${saved ? `Pay it off ${saved} months faster` : 'Apply your surplus to clear debt faster'}</div>`;
+  } else {
+    document.getElementById('extra-power-box').style.display='none';
+  }
+
+  list.innerHTML = sorted.map((d,i) => {
+    const pct = d.original_amount>0 ? Math.min(100,Math.round(((d.original_amount-d.current_balance)/d.original_amount)*100)) : 0;
+    const months = calcMonths(d.current_balance, d.interest_rate, d.minimum_payment);
+    const intCost = calcInterest(d.current_balance, d.interest_rate, d.minimum_payment);
+    const col = i===0?'#E07B5A':i===1?'#D4A843':'#52B788';
+    return `<div class="dc${d.focused?' focused':''}">
+      <div class="dc-top">
+        <div class="dc-icon-wrap">
+          <div class="dc-icon" style="background:${i===0?'var(--coral-pale)':i===1?'#FEF9E7':'var(--green-pale)'}">${d.debt_type||'💳'}</div>
+          <div><div class="dc-name">${d.name}</div><div class="dc-type">${d.lender||'Debt'}</div></div>
+        </div>
+        <div class="dc-rate"><div class="dc-rate-val">${d.interest_rate}%</div><div class="dc-rate-lbl">Interest p.a.</div></div>
+      </div>
+      <div class="dc-prog-top"><span>${S.privacy?'••••':fmt(d.current_balance)} remaining</span><span style="color:${col}">${pct}% paid off</span></div>
+      <div class="dc-prog-track"><div class="dc-prog-fill" style="width:${pct}%;background:linear-gradient(90deg,${col}88,${col})"></div></div>
+      <div class="dc-stats">
+        <div class="dc-stat"><div class="dc-sv">${S.privacy?'••':fmt(d.minimum_payment)+'/mo'}</div><div class="dc-sl">Min payment</div></div>
+        <div class="dc-stat"><div class="dc-sv coral">${months===Infinity?'∞':months+' mo'}</div><div class="dc-sl">At min pay</div></div>
+        <div class="dc-stat"><div class="dc-sv green">${intCost===Infinity?'∞':fmt(intCost)}</div><div class="dc-sl">Interest cost</div></div>
+      </div>
+      <div class="pay-row">
+        <input type="number" class="pay-input" id="pay-${d.id}" placeholder="Payment amount (R)" />
+        <button class="pay-btn" onclick="recordPayment('${d.id}')">Pay ✓</button>
+        <button style="background:var(--coral-pale);color:var(--coral);border:none;border-radius:10px;padding:9px 10px;cursor:pointer;font-size:12px;font-weight:600" onclick="deleteDebt('${d.id}')">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openAddDebt() { document.getElementById('add-debt-modal').classList.add('open'); }
+function closeAddDebt() { document.getElementById('add-debt-modal').classList.remove('open'); }
+
+async function addDebt() {
+  const name = document.getElementById('d-name').value.trim();
+  const type = document.getElementById('d-type').value.trim();
+  const icon = document.getElementById('d-icon').value;
+  const balance = parseFloat(document.getElementById('d-balance').value)||0;
+  const rate = parseFloat(document.getElementById('d-rate').value)||0;
+  const min = parseFloat(document.getElementById('d-min').value)||0;
+  if (!name||balance<=0||min<=0) { toast('Fill in all fields','error'); return; }
+
+  const tempId = 'tmp_'+Date.now();
+  S.debts.push({ id:tempId, name, lender:type, debt_type:icon, original_amount:balance, current_balance:balance, interest_rate:rate, minimum_payment:min, is_active:true });
+  closeAddDebt();
+  renderDebts(); renderHome();
+  document.getElementById('d-name').value=''; document.getElementById('d-type').value='';
+  document.getElementById('d-balance').value=''; document.getElementById('d-rate').value=''; document.getElementById('d-min').value='';
+  toast('Debt added 🔓','success');
+
+  if (S.user) {
+    sb.from('debts').insert([{ user_id:S.user.id, name, lender:type, debt_type:icon, original_amount:balance, current_balance:balance, interest_rate:rate, minimum_payment:min, is_active:true }]).select().single().then(({data,error})=>{
+      if(!error&&data){ const idx=S.debts.findIndex(d=>d.id===tempId); if(idx!==-1) S.debts[idx]=data; saveCache(); }
+    });
+  }
+}
+
+async function recordPayment(id) {
+  const input = document.getElementById('pay-'+id);
+  const amount = parseFloat(input.value)||0;
+  if (amount<=0) return;
+  const debt = S.debts.find(d=>d.id===id);
+  if (!debt) return;
+  const monthlyRate = debt.interest_rate/100/12;
+  const interest = Math.round(debt.current_balance*monthlyRate*100)/100;
+  const principal = Math.max(0, amount-interest);
+  const newBal = Math.max(0, debt.current_balance-principal);
+  debt.current_balance = newBal;
+  input.value='';
+  if (newBal===0) {
+    debt.is_active=false;
+    S.debts = S.debts.filter(d=>d.id!==id);
+    toast(`🎉 ${debt.name} fully paid off!`,'success');
+  } else {
+    toast(`Payment recorded. New balance: ${fmt(newBal)}`,'success');
+  }
+  renderDebts(); renderHome(); saveCache();
+  if (S.user) {
+    sb.from('debts').update({ current_balance:newBal, is_active:newBal>0 }).eq('id',id).then(()=>{});
+    sb.from('debt_payments').insert([{ debt_id:id, user_id:S.user.id, amount, new_balance:newBal }]).then(()=>{});
+  }
+}
+
+async function deleteDebt(id) {
+  if (!confirm('Remove this debt?')) return;
+  S.debts = S.debts.filter(d=>d.id!==id);
+  renderDebts(); renderHome(); saveCache();
+  if (S.user) sb.from('debts').delete().eq('id',id).then(()=>{});
+  toast('Debt removed');
+}
+
+// ─── GROWTH ───────────────────────────────
+function renderGrowth() {
+  const surplus = Math.max(0, S.income - S.debts.reduce((s,d)=>s+d.minimum_payment,0));
+  const totalDebt = S.debts.reduce((s,d)=>s+d.current_balance,0);
+  const score = S.income>0 ? Math.min(100,Math.max(0,Math.round((surplus/S.income)*100+50))) : 30;
+
+  // Stage
+  let stage, sicon;
+  if (score>=75) { stage='Thriving — financial freedom near 🌳'; sicon='🌳'; }
+  else if (score>=55) { stage='Growing steadily 🌿'; sicon='🌿'; }
+  else if (score>=35) { stage='Sprouting — keep going 🌱'; sicon='🌱'; }
+  else { stage='Seedling — building awareness 🌰'; sicon='🌰'; }
+  document.getElementById('gr-sicon').textContent=sicon;
+  document.getElementById('gr-sname').textContent=stage;
+  document.getElementById('gr-bar').style.width=score+'%';
+  document.getElementById('recap-val').textContent=S.privacy?'••••':fmt(surplus);
+  document.getElementById('recap-sub').textContent=S.income>0?`Your monthly surplus · Debt-free target: ${S.debts.length>0?'see plan':'add your debts'}`:'Set your income to see your surplus';
+  document.getElementById('debt-cleared-val').textContent=S.privacy?'••••':fmt(totalDebt);
+  const topDebt = [...S.debts].sort((a,b)=>a.current_balance-b.current_balance)[0];
+  document.getElementById('debt-cleared-sub').textContent=topDebt?`Start with ${topDebt.name} — ${fmt(topDebt.current_balance)} to go 🎯`:'Add your debts to see your debt-free date 🎯';
+}
+
+// ─── VOICE ────────────────────────────────
+let recognition=null, isListening=false;
+
+function toggleVoice() {
+  if (isListening) { stopListening(); return; }
+  startListening();
+}
+
+function startListening() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) { showVoiceResult(null,'error','Voice not supported on this browser. Use Chrome or Safari.'); return; }
+  recognition = new SR();
+  recognition.lang='en-ZA'; recognition.continuous=false; recognition.interimResults=true;
+  recognition.onstart=()=>{
+    isListening=true;
+    document.getElementById('big-mic').classList.add('listening');
+    document.getElementById('transcript-box').style.display='block';
+    document.getElementById('transcript-box').textContent='Listening...';
+    document.getElementById('mic-hint').textContent='Speak now...';
+    document.getElementById('voice-result-area').innerHTML='';
+  };
+  recognition.onresult=(e)=>{
+    const t=Array.from(e.results).map(r=>r[0].transcript).join('');
+    document.getElementById('transcript-box').textContent=t;
+    if (e.results[e.results.length-1].isFinal) { stopListening(); runVoiceCheck(t); }
+  };
+  recognition.onerror=()=>{ stopListening(); document.getElementById('mic-hint').textContent='Could not hear you — tap mic and try again'; };
+  recognition.onend=()=>{ if(isListening) stopListening(); };
+  recognition.start();
+}
+
+function stopListening() {
+  isListening=false;
+  document.getElementById('big-mic').classList.remove('listening');
+  if(recognition) { try{recognition.stop();}catch(e){} }
+}
+
+async function runVoiceCheck(transcript) {
+  const mic = document.getElementById('big-mic');
+  mic.classList.add('processing');
+  document.getElementById('mic-hint').textContent='Analysing your purchase...';
+  document.getElementById('voice-result-area').innerHTML='<div class="voice-thinking"><div class="dots"><span></span><span></span><span></span></div>&nbsp;Zest is thinking...</div>';
+
+  const surplus = Math.max(0, S.income - S.debts.reduce((s,d)=>s+d.minimum_payment,0));
+  const totalDebt = S.debts.reduce((s,d)=>s+d.current_balance,0);
+
+  const prompt = `You are Zest, a warm and smart personal finance AI for South African users. Analyse this voice purchase request.
+
+USER SAID: "${transcript}"
+
+FINANCIAL POSITION:
+- Monthly income: R ${S.income}
+- Monthly surplus: R ${surplus} ${surplus<0?'(DEFICIT)':''}
+- Total debt: R ${totalDebt}
+- Debts: ${S.debts.length>0?S.debts.map(d=>`${d.name} R${Math.round(d.current_balance)}`).join(', '):'None'}
+
+Extract the purchase from what they said. Give a fast, warm, direct verdict.
+
+Respond ONLY with valid JSON:
+{
+  "verdict": "YES" or "NO" or "MAYBE",
+  "headline": "5 words max",
+  "spoken_response": "2-3 sentences. Warm, direct, like a smart friend. Start with YES/NO/MAYBE. Reference their actual numbers.",
+  "detail": "One extra sentence for display"
+}`;
+
+  try {
+    const res = await fetch('/.netlify/functions/ai-check', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ max_tokens:400, messages:[{role:'user',content:prompt}] })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message||data.error);
+    const text = data.content.map(i=>i.text||'').join('');
+    const p = JSON.parse(text.replace(/```json|```/g,'').trim());
+    mic.classList.remove('processing');
+    document.getElementById('mic-hint').textContent='Tap mic to check another purchase';
+    showVoiceResult(p.verdict, p.headline, p.spoken_response, p.detail);
+    setTimeout(()=>speakText(p.spoken_response), 300);
+    setTimeout(()=>{const ra=document.getElementById('voice-result-area');if(ra)ra.insertAdjacentHTML('beforeend','<p style="font-size:10px;color:#7A9E87;text-align:center;font-style:italic;margin-top:8px;padding:0 8px">Zest shows you your options — the decision is always yours. This is not financial advice.</p>');},400);
+  } catch(err) {
+    mic.classList.remove('processing');
+    document.getElementById('mic-hint').textContent='Error — try again';
+    document.getElementById('voice-result-area').innerHTML='<div class="voice-result maybe"><div class="vr-header"><div class="vr-badge">!</div><div class="vr-headline">Could not analyse</div></div><div class="vr-body">Check your connection and try again.</div></div>';
+  }
+}
+
+function showVoiceResult(verdict, headline, body, detail) {
+  if (!verdict) {
+    document.getElementById('voice-result-area').innerHTML=`<div class="voice-result maybe"><div class="vr-header"><div class="vr-badge">!</div><div class="vr-headline">${headline}</div></div><div class="vr-body">${body}</div></div>`;
+    return;
+  }
+  const cls = verdict==='YES'?'yes':verdict==='NO'?'no':'maybe';
+  const icon = verdict==='YES'?'✓':verdict==='NO'?'✕':'~';
+  document.getElementById('voice-result-area').innerHTML=`
+    <div class="voice-result ${cls}">
+      <div class="vr-header">
+        <div class="vr-badge">${icon}</div>
+        <div class="vr-headline">${verdict} — ${headline}</div>
+      </div>
+      <div class="vr-body">${body}${detail?'<br><br><em>'+detail+'</em>':''}</div>
+      <button class="replay-btn" onclick="speakText('${body.replace(/'/g,"\\'")}')">🔊 Replay</button>
+    </div>`;
+}
+
+function speakText(text) {
+  window.speechSynthesis.cancel();
+  function doSpeak() {
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate=0.92; u.pitch=1.05; u.volume=1;
+    const voices = window.speechSynthesis.getVoices();
+    const v = voices.find(v=>v.name==='Samantha')||voices.find(v=>v.name==='Karen')||voices.find(v=>v.name.includes('Google')&&v.name.includes('Female'))||voices.find(v=>v.lang.startsWith('en'));
+    if(v){u.voice=v;u.lang=v.lang;}else{u.lang='en-GB';}
+    window.speechSynthesis.speak(u);
+  }
+  if(window.speechSynthesis.getVoices().length===0){window.speechSynthesis.addEventListener('voiceschanged',doSpeak,{once:true});setTimeout(doSpeak,500);}else{doSpeak();}
+}
+
+// ─── AVATAR MENU ──────────────────────────
+function toggleAvatarMenu() { document.getElementById('avatar-menu').classList.toggle('open'); }
+function closeAvatarMenu() { document.getElementById('avatar-menu').classList.remove('open'); }
+document.addEventListener('click', e => { if(!e.target.closest('#avatar-btn')&&!e.target.closest('#avatar-menu')) closeAvatarMenu(); });
+
+// ─── LEGAL ───────────────────────────────
+const LEGAL = {
+  privacy: {
+    title: '🔒 Privacy Policy',
+    subtitle: 'POPIA Compliance · Stratlink Pty Ltd',
+    body: `
+      <div style="font-size:13px;color:var(--mid);line-height:1.8">
+        <p style="font-size:11px;color:var(--muted);margin-bottom:16px">Protection of Personal Information Act (POPIA), Act 4 of 2013 · Last updated: May 2026</p>
+
+        <h4 style="color:var(--dark);font-size:13px;margin-bottom:6px;margin-top:14px">1. Who We Are</h4>
+        <p>Zest is a product of <strong>Stratlink Pty Ltd</strong>, registered in the Republic of South Africa. Contact: <strong>stratlinksales@gmail.com</strong></p>
+
+        <h4 style="color:var(--dark);font-size:13px;margin-bottom:6px;margin-top:14px">2. What We Collect</h4>
+        <p>Name, email address · Financial data you enter (income, expenses, debts, goals) · Device and usage data · We do <strong>NOT</strong> collect bank credentials, passwords, or card numbers.</p>
+
+        <h4 style="color:var(--dark);font-size:13px;margin-bottom:6px;margin-top:14px">3. How We Protect Your Data</h4>
+        <p>All data is encrypted in transit (TLS 1.2+) and at rest (AES-256). We never sell, rent, or trade your personal information.</p>
+
+        <h4 style="color:var(--dark);font-size:13px;margin-bottom:6px;margin-top:14px">4. Your Rights Under POPIA</h4>
+        <p>Right to access · Right to correction · Right to deletion · Right to object · Right to complain. Contact us at stratlinksales@gmail.com within 30 days.</p>
+
+        <h4 style="color:var(--dark);font-size:13px;margin-bottom:6px;margin-top:14px">5. Information Regulator</h4>
+        <p>www.justice.gov.za/inforeg · inforeg@justice.gov.za · 010 023 5200</p>
+
+        <div style="background:var(--green-pale);border-radius:10px;padding:12px;margin-top:16px;font-size:11px;color:var(--green)">
+          Your data is deleted within 30 days of account deletion, except where retention is required by law.
+        </div>
+      </div>`
+  },
+  disclaimer: {
+    title: '⚖️ Financial Disclaimer',
+    subtitle: 'FAIS Act Compliance · Important Notice',
+    body: `
+      <div style="font-size:13px;color:var(--mid);line-height:1.8">
+        <div style="background:#FEF9E7;border:1px solid rgba(212,168,67,0.3);border-radius:12px;padding:14px;margin-bottom:16px;font-size:12px;color:#7c5800;font-style:italic;line-height:1.7">
+          Zest is a lifestyle and financial management tool, not a licensed financial services provider. The information, tips, and strategies presented in this app are for educational and informational purposes only. They do not constitute financial advice as defined under the Financial Advisory and Intermediary Services Act (FAIS), 2002.
+        </div>
+
+        <h4 style="color:var(--dark);font-size:13px;margin-bottom:6px">What This Means</h4>
+        <p>Zest does not take into account your individual financial circumstances, investment objectives, tax position, or risk tolerance.</p>
+
+        <p style="margin-top:10px">Before making any financial decision, we recommend consulting a <strong>qualified and registered financial advisor</strong>.</p>
+
+        <p style="margin-top:10px">Stratlink Pty Ltd accepts no liability for any financial decisions made based on information provided within this app.</p>
+
+        <h4 style="color:var(--dark);font-size:13px;margin-bottom:6px;margin-top:16px">Zest's Golden Rule</h4>
+        <p><em>"Zest shows you your options and what each means — the decision is always yours."</em></p>
+
+        <div style="background:var(--coral-pale);border-radius:10px;padding:12px;margin-top:16px;font-size:11px;color:#b83a2a">
+          Always consult a registered financial advisor for personal financial decisions.
+        </div>
+      </div>`
+  },
+  terms: {
+    title: '📄 Terms of Use',
+    subtitle: 'Stratlink Pty Ltd · Zest App',
+    body: `
+      <div style="font-size:13px;color:var(--mid);line-height:1.8">
+        <p style="font-size:11px;color:var(--muted);margin-bottom:16px">Effective date: May 2026 · Governing law: Republic of South Africa</p>
+
+        <h4 style="color:var(--dark);font-size:13px;margin-bottom:6px">1. Acceptance</h4>
+        <p>By using Zest, you agree to these Terms. If you do not agree, do not use the app.</p>
+
+        <h4 style="color:var(--dark);font-size:13px;margin-bottom:6px;margin-top:14px">2. Use of the App</h4>
+        <p>Zest is for personal budgeting and debt tracking only. You must be 18 or older to use Zest. You are responsible for the accuracy of data you enter.</p>
+
+        <h4 style="color:var(--dark);font-size:13px;margin-bottom:6px;margin-top:14px">3. Not Financial Advice</h4>
+        <p>Zest is a budgeting tool. Nothing in the app constitutes financial advice. See our Financial Disclaimer for full details.</p>
+
+        <h4 style="color:var(--dark);font-size:13px;margin-bottom:6px;margin-top:14px">4. Your Data</h4>
+        <p>You own your data. We process it only to provide the Zest service. See our Privacy Policy for full details.</p>
+
+        <h4 style="color:var(--dark);font-size:13px;margin-bottom:6px;margin-top:14px">5. Account Termination</h4>
+        <p>You may delete your account at any time. We may suspend accounts that violate these terms.</p>
+
+        <h4 style="color:var(--dark);font-size:13px;margin-bottom:6px;margin-top:14px">6. Contact</h4>
+        <p>stratlinksales@gmail.com · Stratlink Pty Ltd, Republic of South Africa</p>
+
+        <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--green-pale);text-align:center">
+          <p style="font-size:11px;color:var(--muted)">Privacy Policy · Terms of Use · POPIA Compliance</p>
+          <p style="font-size:10px;color:var(--muted);margin-top:4px">© 2026 Stratlink Pty Ltd · Zest Lifestyle & Budgeting App</p>
+        </div>
+      </div>`
+  }
+};
+
+function showLegal(type) {
+  const doc = LEGAL[type];
+  if (!doc) return;
+  document.getElementById('legal-content').innerHTML = `
+    <div class="modal-title">${doc.title}</div>
+    <div class="modal-sub">${doc.subtitle}</div>
+    <div style="margin-top:6px">${doc.body}</div>`;
+  document.getElementById('legal-modal').classList.add('open');
+}
+
+function closeLegal() {
+  document.getElementById('legal-modal').classList.remove('open');
+}
+
+// ─── TOAST ────────────────────────────────
+function toast(msg, type='') {
+  const wrap = document.getElementById('toast-wrap');
+  const el = document.createElement('div');
+  el.className='toast '+(type||''); el.textContent=msg; wrap.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transition='opacity .3s'; setTimeout(()=>el.remove(),300); },3000);
+}
+
+// ─── MODAL HELPERS ────────────────────────────────────────────
+function openAddExpense(){document.getElementById('add-expense-modal').classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function openAddGoal(){document.getElementById('add-goal-modal').classList.add('open');}
+function closeAddGoal(){document.getElementById('add-goal-modal').classList.remove('open');}
+
+// ─── SCREEN EXTENSIONS ────────────────────────────────────────
+const _origShowScreen = showScreen;
+showScreen = function(name, btn) {
+  _origShowScreen(name, btn);
+  if(name==='goals') renderGoals();
+  if(name==='timeline') renderTimeline();
+  if(name==='settings'){
+    document.getElementById('set-name').value = S.profile.full_name||'';
+    document.getElementById('set-email').value = S.user?.email||'';
+    document.getElementById('set-income').value = S.income||'';
+    document.getElementById('set-rate').value = S.saveRate||20;
+    renderExpSettings();
+  }
+};
+
+// ─── EXPENSES ─────────────────────────────────────────────────
+async function addExpense(){
+  const name=document.getElementById('e-name').value.trim();
+  const amount=parseFloat(document.getElementById('e-amount').value)||0;
+  const cat=document.getElementById('e-cat').value;
+  const freq=document.getElementById('e-freq').value;
+  if(!name||amount<=0){toast('Fill in name and amount','error');return;}
+  const monthly=freq==='weekly'?amount*4.33:freq==='once'?amount/12:amount;
+  const tmp={id:'t'+Date.now(),name,amount,monthly_amount:monthly,category:cat,frequency:freq};
+  S.expenses.unshift(tmp);
+  closeModal('add-expense-modal');
+  document.getElementById('e-name').value='';document.getElementById('e-amount').value='';
+  renderHome();renderExpSettings();saveCache();
+  toast('Expense added ✓','success');
+  if(S.user){
+    sb.from('expenses').insert([{user_id:S.user.id,name,amount,monthly_amount:monthly,category:cat,frequency:freq,is_recurring:freq!=='once'}]).select().single().then(({data,error})=>{
+      if(!error&&data){const i=S.expenses.findIndex(e=>e.id===tmp.id);if(i!==-1)S.expenses[i]=data;saveCache();}
+    });
+  }
+}
+async function delExpense(id){
+  S.expenses=S.expenses.filter(e=>e.id!==id);
+  renderHome();renderExpSettings();saveCache();toast('Expense removed');
+  if(S.user)sb.from('expenses').delete().eq('id',id).then(()=>{});
+}
+function renderExpSettings(){
+  const el=document.getElementById('exp-list-settings');
+  if(!el)return;
+  const total=S.expenses.reduce((s,e)=>s+(e.monthly_amount||0),0);
+  const totEl=document.getElementById('exp-total-settings');
+  if(totEl)totEl.textContent=fmt(total);
+  if(!S.expenses.length){el.innerHTML='<div style="font-size:12px;color:var(--muted);text-align:center;padding:12px 0">No expenses added yet</div>';return;}
+  el.innerHTML=S.expenses.map(e=>`<div class="item-row"><span class="item-cat">${(e.category||'').split(' ')[0]}</span><span class="item-name">${e.name}</span><span class="item-amount">${fmt(e.monthly_amount)}</span><button class="item-del" onclick="delExpense('${e.id}')">✕</button></div>`).join('');
+}
+
+// ─── GOALS ────────────────────────────────────────────────────
+async function addGoal(){
+  const name=document.getElementById('g-name').value.trim();
+  const target=parseFloat(document.getElementById('g-target').value)||0;
+  const saved=parseFloat(document.getElementById('g-saved').value)||0;
+  const cat=document.getElementById('g-cat').value;
+  if(!name||target<=0){toast('Fill in goal name and target','error');return;}
+  const tmp={id:'t'+Date.now(),name,target_amount:target,saved_amount:saved,category:cat};
+  S.goals.push(tmp);
+  closeModal('add-goal-modal');
+  document.getElementById('g-name').value='';document.getElementById('g-target').value='';document.getElementById('g-saved').value='';
+  renderGoals();saveCache();toast('Goal added 🎯','success');
+  if(S.user){
+    sb.from('goals').insert([{user_id:S.user.id,name,target_amount:target,saved_amount:saved,category:cat,priority:'medium'}]).select().single().then(({data,error})=>{
+      if(!error&&data){const i=S.goals.findIndex(g=>g.id===tmp.id);if(i!==-1)S.goals[i]=data;saveCache();}
+    });
+  }
+}
+async function addContrib(id){
+  const input=document.getElementById('gc-'+id);
+  const amount=parseFloat(input.value)||0;
+  if(amount<=0)return;
+  const g=S.goals.find(g=>g.id===id);if(!g)return;
+  g.saved_amount=Math.min(g.target_amount,g.saved_amount+amount);
+  input.value='';renderGoals();saveCache();
+  toast('+'+fmt(amount)+' saved 💚','success');
+  if(S.user)sb.from('goals').update({saved_amount:g.saved_amount}).eq('id',id).then(()=>{});
+}
+async function delGoal(id){
+  S.goals=S.goals.filter(g=>g.id!==id);renderGoals();saveCache();toast('Goal removed');
+  if(S.user)sb.from('goals').delete().eq('id',id).then(()=>{});
+}
+function renderGoals(){
+  const el=document.getElementById('goals-list');if(!el)return;
+  const totalSaved=S.goals.reduce((s,g)=>s+g.saved_amount,0);
+  const totalTarget=S.goals.reduce((s,g)=>s+g.target_amount,0);
+  const tsel=document.getElementById('g-total-saved');if(tsel)tsel.textContent=fmt(totalSaved);
+  const ttel=document.getElementById('g-to-target');if(ttel)ttel.textContent=fmt(Math.max(0,totalTarget-totalSaved));
+  if(!S.goals.length){el.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--muted)"><div style="font-size:36px;margin-bottom:10px">🎯</div><div style="font-size:14px;font-weight:600;color:var(--mid);margin-bottom:4px">No goals yet</div><div style="font-size:12px">Tap "+ Add goal" to set your first savings target</div></div>';return;}
+  const totalExp=S.expenses.reduce((s,e)=>s+(e.monthly_amount||0),0);
+  const surplus=Math.max(0,S.income-totalExp);
+  const perGoal=S.goals.length>0?surplus*(S.saveRate/100)/S.goals.length:0;
+  el.innerHTML=S.goals.map(g=>{
+    const pct=Math.min(100,Math.round((g.saved_amount/g.target_amount)*100));
+    const rem=g.target_amount-g.saved_amount;
+    const months=perGoal>0?Math.ceil(rem/perGoal):null;
+    return`<div class="goal-card"><div class="gc-top"><div><div class="gc-name">${(g.category||'').split(' ')[0]} ${g.name}</div><div style="font-size:11px;color:var(--muted);margin-top:2px">${fmt(g.saved_amount)} saved of ${fmt(g.target_amount)}</div></div><div class="gc-pct">${pct}%</div></div><div style="height:7px;background:var(--green-pale);border-radius:100px;overflow:hidden"><div style="height:100%;border-radius:100px;background:linear-gradient(90deg,var(--green),var(--green-light));width:${pct}%"></div></div><div style="font-size:10px;color:var(--muted);margin-top:5px">${months?months+' months to go at current savings rate':'Set income and expenses for projection'}</div><div class="gc-contrib"><input type="number" id="gc-${g.id}" class="gc-input" placeholder="Add (R)"/><button class="gc-btn" onclick="addContrib('${g.id}')">+ Add</button><button style="background:var(--coral-pale);color:var(--coral);border:none;border-radius:10px;padding:8px 10px;cursor:pointer;font-size:11px;font-weight:600" onclick="delGoal('${g.id}')">✕</button></div></div>`;
+  }).join('');
+}
+
+// ─── TIMELINE ─────────────────────────────────────────────────
+function renderTimeline(){
+  const totalExp=S.expenses.reduce((s,e)=>s+(e.monthly_amount||0),0);
+  const surplus=Math.max(0,S.income-totalExp);
+  const perGoal=S.goals.length>0?surplus*(S.saveRate/100)/S.goals.length:0;
+  const now=new Date();const events=[];
+  if(S.income>0){events.push({type:'done',date:'Today',event:'Financial baseline set',detail:`Income ${fmt(S.income)} · Expenses ${fmt(totalExp)} · Surplus ${fmt(Math.max(0,surplus))}`});}
+  if(surplus<0){events.push({type:'warn',date:'Priority #1',event:'Eliminate monthly deficit',detail:`Cut ${fmt(Math.abs(surplus))} from monthly expenses to break even`});}
+  else if(surplus>0){events.push({type:'next',date:'This month',event:`Saving ${fmt(surplus*(S.saveRate/100))}/month`,detail:`${S.saveRate}% savings rate`});}
+  const sortedD=[...S.debts].sort((a,b)=>a.current_balance-b.current_balance);
+  const extraD=Math.max(0,surplus-S.debts.reduce((s,d)=>s+(d.minimum_payment||0),0));
+  sortedD.forEach(d=>{
+    const pay=d.minimum_payment+(sortedD[0]?.id===d.id?extraD:0);
+    const r=d.interest_rate/100/12;let m;
+    if(r===0)m=pay>0?Math.ceil(d.current_balance/pay):Infinity;
+    else if(pay<=d.current_balance*r)m=Infinity;
+    else m=Math.ceil(-Math.log(1-(d.current_balance*r)/pay)/Math.log(1+r));
+    if(isFinite(m)){const dt=new Date(now);dt.setMonth(dt.getMonth()+m);events.push({type:'next',date:dt.toLocaleDateString('en-ZA',{month:'long',year:'numeric'}),event:'💳 '+d.name+' fully paid off',detail:m+' months · '+fmt(d.minimum_payment)+'/month minimum'});}
+  });
+  S.goals.forEach(g=>{
+    const pct=Math.round((g.saved_amount/g.target_amount)*100);
+    if(pct>=100){events.push({type:'done',date:'Achieved ✓',event:'🎯 '+g.name+' reached!',detail:'You saved '+fmt(g.target_amount)});return;}
+    const rem=g.target_amount-g.saved_amount;
+    if(perGoal>0){const m=Math.ceil(rem/perGoal);const dt=new Date(now);dt.setMonth(dt.getMonth()+m);events.push({type:'next',date:dt.toLocaleDateString('en-ZA',{month:'long',year:'numeric'}),event:'🎯 '+g.name+' reached',detail:m+' months at '+fmt(perGoal)+'/month · '+pct+'% there'});}
+    else events.push({type:'next',date:'?',event:'🎯 '+g.name,detail:pct+'% saved — set income for projection'});
+  });
+  const el=document.getElementById('timeline-content');if(!el)return;
+  if(!events.length){el.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--muted)"><div style="font-size:36px;margin-bottom:10px">🗓️</div><div style="font-size:12px">Set your income, expenses and goals to see your timeline</div></div>';return;}
+  el.innerHTML='<div class="tl-wrap">'+events.map(e=>`<div class="tl-item ${e.type}"><div class="tl-dot"></div><div><div class="tl-date">${e.date}</div><div class="tl-event">${e.event}</div><div class="tl-detail">${e.detail}</div></div></div>`).join('')+'</div>';
+}
+
+// ─── SETTINGS FUNCTIONS ───────────────────────────────────────
+async function saveProfile(){
+  const name=document.getElementById('set-name').value.trim();
+  if(!name){toast('Enter your name','error');return;}
+  S.profile.full_name=name;
+  document.getElementById('av-init').textContent=name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+  document.getElementById('av-name').textContent=name;
+  document.getElementById('hero-name').textContent=name.split(' ')[0]+' 👋';
+  saveCache();toast('Profile saved ✓','success');
+  if(S.user)sb.from('profiles').update({full_name:name}).eq('id',S.user.id).then(()=>{});
+}
+async function saveFinances(){
+  S.income=parseFloat(document.getElementById('set-income').value)||0;
+  S.saveRate=parseInt(document.getElementById('set-rate').value)||20;
+  saveCache();renderHome();toast('Finances saved ✓','success');
+  if(S.user)sb.from('profiles').update({monthly_income:S.income,save_rate:S.saveRate}).eq('id',S.user.id).then(()=>{});
+}
+async function deleteAccount(){
+  if(!confirm('Delete ALL your Zest data permanently? This cannot be undone.'))return;
+  if(S.user){const uid=S.user.id;await Promise.all([sb.from('expenses').delete().eq('user_id',uid),sb.from('goals').delete().eq('user_id',uid),sb.from('debts').delete().eq('user_id',uid)]);}
+  signOut();toast('Account deleted. Goodbye! 👋');
+}
+
+// ─── UPDATE showScreen TO HANDLE NEW SCREENS ──────────────────
+const _baseShow=showScreen;
+function showScreen(name,btn){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById('screen-'+name);
+  if(el)el.classList.add('active');
+  if(btn){document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
+}
+
+// ─── HOME QUICK ACTION LINKS ──────────────────────────────────
+// Update quick action buttons 
+document.addEventListener('DOMContentLoaded',()=>{
+  // Sync server on load
+  syncFromServer();
+});
+</script>
+</body>
+</html>
