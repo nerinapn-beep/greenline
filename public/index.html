@@ -370,6 +370,61 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 #auth-screen,#app-screen{-webkit-transform:translateZ(0);transform:translateZ(0);-webkit-overflow-scrolling:touch;}
 .screen{-webkit-backface-visibility:hidden;backface-visibility:hidden;}
 * {-webkit-box-sizing:border-box;}
+
+/* ── Savings Goals — circular progress rings ── */
+.goals-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px 16px 0;}
+.goal-ring-card{background:var(--white);border-radius:20px;padding:16px 12px;box-shadow:var(--shadow);text-align:center;position:relative;}
+.ring-wrap{position:relative;width:80px;height:80px;margin:0 auto 10px;}
+.ring-wrap svg{transform:rotate(-90deg);}
+.ring-bg{fill:none;stroke:var(--green-pale);stroke-width:7;}
+.ring-fill{fill:none;stroke-width:7;stroke-linecap:round;transition:stroke-dashoffset .6s ease;}
+.ring-pct{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:14px;font-weight:700;color:var(--dark);font-family:var(--fd);}
+.ring-cat{font-size:20px;margin-bottom:4px;}
+.ring-name{font-size:11px;font-weight:700;color:var(--dark);margin-bottom:2px;line-height:1.3;}
+.ring-saved{font-size:11px;color:var(--green);font-weight:600;}
+.ring-target{font-size:10px;color:var(--muted);}
+.ring-months{font-size:10px;color:var(--muted);margin-top:3px;}
+.ring-contrib{display:flex;gap:6px;margin-top:10px;}
+.ring-input{flex:1;border:1px solid var(--green-pale);border-radius:10px;padding:7px 8px;font-size:12px;font-family:var(--fb);color:var(--dark);background:var(--cream);min-width:0;}
+.ring-add-btn{background:var(--green-pale);color:var(--green);border:none;border-radius:10px;padding:7px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--fb);white-space:nowrap;}
+.ring-del-btn{background:var(--coral-pale);color:var(--coral);border:none;border-radius:10px;padding:7px 8px;font-size:11px;cursor:pointer;font-weight:700;}
+
+/* ── Daily Spend Logger ── */
+.spend-day-header{padding:14px 16px 6px;display:flex;justify-content:space-between;align-items:center;}
+.spend-date{font-size:13px;font-weight:700;color:var(--dark);}
+.spend-total-day{font-size:13px;font-weight:700;color:var(--green);font-family:var(--fd);}
+.spend-item{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--green-pale);}
+.spend-item-icon{width:36px;height:36px;border-radius:12px;background:var(--green-pale);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.spend-item-name{flex:1;font-size:13px;font-weight:600;color:var(--dark);}
+.spend-item-cat{font-size:10px;color:var(--muted);}
+.spend-item-amt{font-size:13px;font-weight:700;color:var(--dark);font-family:var(--fd);}
+.spend-item-del{background:none;border:none;color:var(--muted);font-size:14px;cursor:pointer;padding:4px;}
+.spend-empty{text-align:center;padding:40px 20px;color:var(--muted);}
+.spend-add-bar{position:sticky;bottom:0;background:var(--white);border-top:1px solid var(--green-pale);padding:12px 16px;display:flex;gap:8px;}
+.spend-add-input{flex:1;border:1px solid var(--green-pale);border-radius:12px;padding:10px 12px;font-size:13px;font-family:var(--fb);color:var(--dark);background:var(--cream);}
+.spend-add-btn{background:var(--green-light);color:var(--dark);border:none;border-radius:12px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fb);}
+
+/* ── Monthly Report ── */
+.report-hero-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px 14px;}
+.rhs{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;}
+.rhs-lbl{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
+.rhs-val{font-size:18px;font-weight:700;font-family:var(--fd);color:var(--white);}
+.rhs-val.green{color:var(--green-light);}
+.rhs-val.coral{color:var(--coral);}
+.report-section{margin:0 16px 14px;background:var(--white);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow);}
+.report-section-title{font-size:12px;font-weight:700;color:var(--dark);letter-spacing:.5px;text-transform:uppercase;margin-bottom:10px;}
+.report-cat-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.report-cat-icon{font-size:18px;width:28px;text-align:center;}
+.report-cat-name{flex:1;font-size:12px;font-weight:600;color:var(--dark);}
+.report-cat-amt{font-size:12px;font-weight:700;color:var(--dark);font-family:var(--fd);}
+.report-cat-bar-wrap{height:4px;background:var(--green-pale);border-radius:100px;overflow:hidden;margin-top:3px;}
+.report-cat-bar{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--green),var(--green-light));}
+.report-compare{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--green-pale);}
+.report-compare:last-child{border:none;}
+.report-compare-lbl{font-size:12px;color:var(--mid);}
+.report-compare-val{font-size:13px;font-weight:700;font-family:var(--fd);}
+.report-compare-val.up{color:var(--coral);}
+.report-compare-val.down{color:var(--green);}
 </style>
 </head>
 <body>
@@ -516,10 +571,20 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
             <div class="quick-label">Categories</div>
             <div class="quick-sub">Spending by type</div>
           </div>
-          <div class="quick-card" onclick="showScreen('growth')">
-            <div class="quick-icon">🌱</div>
-            <div class="quick-label">My growth</div>
-            <div class="quick-sub">Wins & milestones</div>
+          <div class="quick-card" onclick="showScreen('spend')">
+            <div class="quick-icon">🧾</div>
+            <div class="quick-label">Daily log</div>
+            <div class="quick-sub">Log today's spend</div>
+          </div>
+          <div class="quick-card" onclick="showScreen('report')">
+            <div class="quick-icon">📅</div>
+            <div class="quick-label">Monthly report</div>
+            <div class="quick-sub">Your money summary</div>
+          </div>
+          <div class="quick-card" onclick="showScreen('goals')">
+            <div class="quick-icon">🎯</div>
+            <div class="quick-label">My goals</div>
+            <div class="quick-sub">Savings progress</div>
           </div>
         </div>
 
@@ -815,8 +880,8 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         <div style="flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:10px 12px"><div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">To target</div><div style="font-family:var(--fd);font-size:17px;color:var(--white)" id="g-to-target">R 0</div></div>
       </div>
     </div>
-    <div class="scroll-body" id="goals-list" style="padding-top:10px">
-      <div style="text-align:center;padding:40px 20px;color:var(--muted)"><div style="font-size:36px;margin-bottom:10px">🎯</div><div style="font-size:14px;font-weight:600;color:var(--mid);margin-bottom:4px">No goals yet</div><div style="font-size:12px">Tap "+ Add goal" to set your first savings target</div></div>
+    <div class="scroll-body" style="padding-top:6px;padding-bottom:80px">
+      <div class="goals-grid" id="goals-list"></div>
     </div>
     <div class="nav">
       <button class="nav-btn" onclick="showScreen('home',this)"><span class="ni">🏠</span>Home<div class="nav-dot"></div></button>
@@ -920,6 +985,74 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         <button class="submit-btn" onclick="saveEditExpense()">Save changes ✓</button>
         <button class="cancel-btn" onclick="closeModal('edit-expense-modal')">Cancel</button>
       </div>
+    </div>
+  </div>
+
+
+  <!-- DAILY SPEND LOGGER SCREEN -->
+  <div class="screen" id="screen-spend">
+    <div class="hero">
+      <div class="hero-topbar">
+        <div><div class="hero-greet">Today's spend</div><div style="font-family:var(--fd);font-size:22px;color:var(--white);font-weight:300">Quick <em style="color:var(--gold);font-style:italic">log</em></div></div>
+        <button class="icon-btn" onclick="showScreen('home')">← Back</button>
+      </div>
+      <div style="display:flex;gap:8px">
+        <div style="flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:10px 12px"><div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">Spent today</div><div style="font-family:var(--fd);font-size:17px;color:var(--coral)" id="spend-today-total">R 0</div></div>
+        <div style="flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:10px 12px"><div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">This week</div><div style="font-family:var(--fd);font-size:17px;color:var(--white)" id="spend-week-total">R 0</div></div>
+      </div>
+    </div>
+    <div class="scroll-body" style="padding-bottom:100px" id="spend-log-list"></div>
+    <div class="spend-add-bar">
+      <input class="spend-add-input" id="spend-desc" placeholder="e.g. Coffee at Vida"/>
+      <input class="spend-add-input" id="spend-amt" type="number" placeholder="R" style="width:70px;flex:none"/>
+      <select class="spend-add-input" id="spend-cat" style="width:80px;flex:none;font-size:11px">
+        <option value="🛒 Food">🛒 Food</option>
+        <option value="🚌 Transport">🚌 Transport</option>
+        <option value="☕ Coffee">☕ Coffee</option>
+        <option value="🎬 Entertainment">🎬 Entertainment</option>
+        <option value="🏋️ Gym">🏋️ Gym</option>
+        <option value="👗 Clothing">👗 Clothing</option>
+        <option value="💊 Health">💊 Health</option>
+        <option value="📦 Other">📦 Other</option>
+      </select>
+      <button class="spend-add-btn" onclick="addSpend()">+ Log</button>
+    </div>
+  </div>
+
+  <!-- MONTHLY REPORT SCREEN -->
+  <div class="screen" id="screen-report">
+    <div class="hero">
+      <div class="hero-topbar">
+        <div><div class="hero-greet" id="report-month-lbl">This month</div><div style="font-family:var(--fd);font-size:22px;color:var(--white);font-weight:300">Money <em style="color:var(--gold);font-style:italic">report</em></div></div>
+        <button class="icon-btn" onclick="showScreen('home')">← Back</button>
+      </div>
+      <div class="report-hero-stats">
+        <div class="rhs"><div class="rhs-lbl">Income</div><div class="rhs-val green" id="rpt-income">R 0</div></div>
+        <div class="rhs"><div class="rhs-lbl">Expenses</div><div class="rhs-val coral" id="rpt-expenses">R 0</div></div>
+        <div class="rhs"><div class="rhs-lbl">Saved</div><div class="rhs-val green" id="rpt-saved">R 0</div></div>
+        <div class="rhs"><div class="rhs-lbl">Save rate</div><div class="rhs-val" id="rpt-rate">0%</div></div>
+      </div>
+    </div>
+    <div class="scroll-body" style="padding-top:10px;padding-bottom:80px">
+      <div class="report-section">
+        <div class="report-section-title">Spending by category</div>
+        <div id="rpt-cat-list"></div>
+      </div>
+      <div class="report-section">
+        <div class="report-section-title">Month summary</div>
+        <div id="rpt-summary"></div>
+      </div>
+      <div class="report-section">
+        <div class="report-section-title">💡 Zest insight</div>
+        <div id="rpt-insight" style="font-size:13px;color:var(--mid);line-height:1.6"></div>
+      </div>
+    </div>
+    <div class="nav">
+      <button class="nav-btn" onclick="showScreen('home',this)"><span class="ni">🏠</span>Home<div class="nav-dot"></div></button>
+      <button class="nav-btn" onclick="showScreen('nudges',this)"><span class="ni">⚡</span>Nudges<div class="nav-dot"></div></button>
+      <button class="nav-btn" onclick="showScreen('voice',this)"><span class="ni">🎤</span>Talk<div class="nav-dot"></div></button>
+      <button class="nav-btn" onclick="showScreen('debt',this)"><span class="ni">🔓</span>Debt<div class="nav-dot"></div></button>
+      <button class="nav-btn" onclick="showScreen('growth',this)"><span class="ni">🌱</span>Growth<div class="nav-dot"></div></button>
     </div>
   </div>
 
@@ -1636,6 +1769,8 @@ showScreen = function(name, btn) {
   if(name==='goals') renderGoals();
   if(name==='timeline') renderTimeline();
   if(name==='categories') renderCategories();
+  if(name==='spend') renderSpendLog();
+  if(name==='report') renderReport();
   if(name==='settings'){
     document.getElementById('set-name').value = S.profile.full_name||'';
     document.getElementById('set-email').value = S.user?.email||'';
@@ -1719,15 +1854,45 @@ function renderGoals(){
   const totalTarget=S.goals.reduce((s,g)=>s+g.target_amount,0);
   const tsel=document.getElementById('g-total-saved');if(tsel)tsel.textContent=fmt(totalSaved);
   const ttel=document.getElementById('g-to-target');if(ttel)ttel.textContent=fmt(Math.max(0,totalTarget-totalSaved));
-  if(!S.goals.length){el.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--muted)"><div style="font-size:36px;margin-bottom:10px">🎯</div><div style="font-size:14px;font-weight:600;color:var(--mid);margin-bottom:4px">No goals yet</div><div style="font-size:12px">Tap "+ Add goal" to set your first savings target</div></div>';return;}
+  if(!S.goals.length){
+    el.style.display='block';
+    el.innerHTML='<div style="text-align:center;padding:40px 20px;color:var(--muted);grid-column:1/-1"><div style="font-size:36px;margin-bottom:10px">🎯</div><div style="font-size:14px;font-weight:600;color:var(--mid);margin-bottom:4px">No goals yet</div><div style="font-size:12px">Tap \"+ Add goal\" to set your first savings target</div></div>';
+    return;
+  }
   const totalExp=S.expenses.reduce((s,e)=>s+(e.monthly_amount||0),0);
   const surplus=Math.max(0,S.income-totalExp);
   const perGoal=S.goals.length>0?surplus*(S.saveRate/100)/S.goals.length:0;
+  const R=34; const C=2*Math.PI*R;
   el.innerHTML=S.goals.map(g=>{
     const pct=Math.min(100,Math.round((g.saved_amount/g.target_amount)*100));
     const rem=g.target_amount-g.saved_amount;
     const months=perGoal>0?Math.ceil(rem/perGoal):null;
-    return`<div class="goal-card"><div class="gc-top"><div><div class="gc-name">${(g.category||'').split(' ')[0]} ${g.name}</div><div style="font-size:11px;color:var(--muted);margin-top:2px">${fmt(g.saved_amount)} saved of ${fmt(g.target_amount)}</div></div><div class="gc-pct">${pct}%</div></div><div style="height:7px;background:var(--green-pale);border-radius:100px;overflow:hidden"><div style="height:100%;border-radius:100px;background:linear-gradient(90deg,var(--green),var(--green-light));width:${pct}%"></div></div><div style="font-size:10px;color:var(--muted);margin-top:5px">${months?months+' months to go at current savings rate':'Set income and expenses for projection'}</div><div class="gc-contrib"><input type="number" id="gc-${g.id}" class="gc-input" placeholder="Add (R)"/><button class="gc-btn" onclick="addContrib('${g.id}')">+ Add</button><button style="background:var(--coral-pale);color:var(--coral);border:none;border-radius:10px;padding:8px 10px;cursor:pointer;font-size:11px;font-weight:600" onclick="delGoal('${g.id}')">✕</button></div></div>`;
+    const offset=C-((pct/100)*C);
+    const colour=pct>=100?'#52B788':pct>=60?'#52B788':pct>=30?'#D4A843':'#E07B5A';
+    const cat=(g.category||'📦 Other').split(' ')[0];
+    return`<div class="goal-ring-card">
+      <div class="ring-cat">${cat}</div>
+      <div class="ring-wrap">
+        <svg width="80" height="80" viewBox="0 0 80 80">
+          <circle class="ring-bg" cx="40" cy="40" r="${R}"/>
+          <circle class="ring-fill" cx="40" cy="40" r="${R}"
+            stroke="${colour}"
+            stroke-dasharray="${C}"
+            stroke-dashoffset="${offset}"
+            style="transition:stroke-dashoffset .6s ease"/>
+        </svg>
+        <div class="ring-pct">${pct}%</div>
+      </div>
+      <div class="ring-name">${g.name}</div>
+      <div class="ring-saved">${fmt(g.saved_amount)}</div>
+      <div class="ring-target">of ${fmt(g.target_amount)}</div>
+      <div class="ring-months">${months?months+' months to go':pct>=100?'🎉 Goal reached!':' '}</div>
+      <div class="ring-contrib">
+        <input type="number" id="gc-${g.id}" class="ring-input" placeholder="Add (R)"/>
+        <button class="ring-add-btn" onclick="addContrib('${g.id}')">+</button>
+        <button class="ring-del-btn" onclick="delGoal('${g.id}')">✕</button>
+      </div>
+    </div>`;
   }).join('');
 }
 
@@ -1906,6 +2071,162 @@ async function saveFinances() {
   S.saveRate = parseInt(document.getElementById('set-rate').value) || 20;
   saveCache(); renderHome(); toast('Finances saved ✓', 'success');
   if (S.user) sb.from('profiles').update({ monthly_income: S.income, save_rate: S.saveRate }).eq('id', S.user.id).then(() => {});
+}
+
+
+// ─── DAILY SPEND LOGGER ───────────────────────────────────────
+function getSpendLog() {
+  try { return JSON.parse(localStorage.getItem('zest_spend_log') || '[]'); } catch(e) { return []; }
+}
+function saveSpendLog(log) {
+  localStorage.setItem('zest_spend_log', JSON.stringify(log));
+}
+function todayStr() {
+  return new Date().toISOString().split('T')[0];
+}
+
+function addSpend() {
+  const desc = document.getElementById('spend-desc').value.trim();
+  const amt = parseFloat(document.getElementById('spend-amt').value) || 0;
+  const cat = document.getElementById('spend-cat').value;
+  if (!desc || amt <= 0) { toast('Enter description and amount', 'error'); return; }
+  const log = getSpendLog();
+  log.unshift({ id: 't'+Date.now(), date: todayStr(), desc, amt, cat });
+  saveSpendLog(log);
+  document.getElementById('spend-desc').value = '';
+  document.getElementById('spend-amt').value = '';
+  renderSpendLog();
+  toast('Logged ✓', 'success');
+}
+
+function delSpend(id) {
+  const log = getSpendLog().filter(s => s.id !== id);
+  saveSpendLog(log);
+  renderSpendLog();
+}
+
+function renderSpendLog() {
+  const log = getSpendLog();
+  const today = todayStr();
+  const todayItems = log.filter(s => s.date === today);
+  const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7);
+  const weekItems = log.filter(s => new Date(s.date) >= weekAgo);
+  const todayTotal = todayItems.reduce((s, i) => s + i.amt, 0);
+  const weekTotal = weekItems.reduce((s, i) => s + i.amt, 0);
+  const todayEl = document.getElementById('spend-today-total');
+  const weekEl = document.getElementById('spend-week-total');
+  if (todayEl) todayEl.textContent = fmt(todayTotal);
+  if (weekEl) weekEl.textContent = fmt(weekTotal);
+  const el = document.getElementById('spend-log-list');
+  if (!el) return;
+  if (!log.length) {
+    el.innerHTML = '<div class="spend-empty"><div style="font-size:36px;margin-bottom:10px">🧾</div><div style="font-size:14px;font-weight:600;color:var(--mid)">Nothing logged yet</div><div style="font-size:12px;margin-top:4px">Use the bar below to log a purchase</div></div>';
+    return;
+  }
+  // Group by date
+  const days = {};
+  log.forEach(item => {
+    if (!days[item.date]) days[item.date] = [];
+    days[item.date].push(item);
+  });
+  const catIcon = cat => (cat||'📦').split(' ')[0];
+  el.innerHTML = Object.keys(days).sort((a,b)=>b.localeCompare(a)).map(date => {
+    const items = days[date];
+    const dayTotal = items.reduce((s,i) => s+i.amt, 0);
+    const label = date === today ? 'Today' : date === new Date(Date.now()-86400000).toISOString().split('T')[0] ? 'Yesterday' : new Date(date).toLocaleDateString('en-ZA',{weekday:'short',day:'numeric',month:'short'});
+    return `<div class="spend-day-header"><span class="spend-date">${label}</span><span class="spend-total-day">${fmt(dayTotal)}</span></div>` +
+      items.map(i => `<div class="spend-item">
+        <div class="spend-item-icon">${catIcon(i.cat)}</div>
+        <div><div class="spend-item-name">${i.desc}</div><div class="spend-item-cat">${i.cat}</div></div>
+        <div class="spend-item-amt">${fmt(i.amt)}</div>
+        <button class="spend-item-del" onclick="delSpend('${i.id}')">✕</button>
+      </div>`).join('');
+  }).join('');
+}
+
+// ─── MONTHLY REPORT ───────────────────────────────────────────
+function renderReport() {
+  const now = new Date();
+  const monthName = now.toLocaleDateString('en-ZA', {month:'long', year:'numeric'});
+  const lbl = document.getElementById('report-month-lbl');
+  if (lbl) lbl.textContent = monthName;
+
+  const totalExp = S.expenses.reduce((s,e) => s+(e.monthly_amount||0), 0);
+  const surplus = Math.max(0, S.income - totalExp);
+  const saveRate = S.income > 0 ? Math.round((surplus/S.income)*100) : 0;
+
+  // Hero stats
+  const set = (id, val) => { const el=document.getElementById(id); if(el) el.textContent=val; };
+  set('rpt-income', fmt(S.income));
+  set('rpt-expenses', fmt(totalExp));
+  set('rpt-saved', fmt(surplus));
+  set('rpt-rate', saveRate + '%');
+
+  // Category breakdown
+  const catEl = document.getElementById('rpt-cat-list');
+  if (catEl) {
+    const byCat = {};
+    S.expenses.forEach(e => {
+      const k = e.category || '📦 Other';
+      byCat[k] = (byCat[k]||0) + (e.monthly_amount||0);
+    });
+    const sorted = Object.entries(byCat).sort((a,b) => b[1]-a[1]);
+    const max = sorted[0]?.[1] || 1;
+    if (!sorted.length) {
+      catEl.innerHTML = '<div style="font-size:12px;color:var(--muted);text-align:center;padding:12px 0">No expenses added yet</div>';
+    } else {
+      catEl.innerHTML = sorted.map(([cat, amt]) => {
+        const icon = cat.split(' ')[0];
+        const name = cat.split(' ').slice(1).join(' ');
+        const pct = Math.round((amt/max)*100);
+        const budgets = JSON.parse(localStorage.getItem('zest_cat_budgets')||'{}');
+        const budget = budgets[cat];
+        const over = budget && amt > budget;
+        return `<div class="report-cat-row">
+          <div class="report-cat-icon">${icon}</div>
+          <div style="flex:1">
+            <div style="display:flex;justify-content:space-between">
+              <span class="report-cat-name">${name}</span>
+              <span class="report-cat-amt" style="${over?'color:var(--coral)':''}">${fmt(amt)}</span>
+            </div>
+            <div class="report-cat-bar-wrap"><div class="report-cat-bar" style="width:${pct}%;${over?'background:var(--coral)':''}"></div></div>
+            ${budget ? `<div style="font-size:10px;color:${over?'var(--coral)':'var(--muted)'};margin-top:2px">${over?'⚠️ Over budget — '+fmt(budget)+' set':'Budget: '+fmt(budget)}</div>` : ''}
+          </div>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  // Summary
+  const sumEl = document.getElementById('rpt-summary');
+  if (sumEl) {
+    const debtTotal = S.debts.reduce((s,d) => s+d.current_balance, 0);
+    const goalTotal = S.goals.reduce((s,g) => s+g.saved_amount, 0);
+    const rows = [
+      ['Monthly income', fmt(S.income), ''],
+      ['Total expenses', fmt(totalExp), totalExp > S.income ? 'up' : ''],
+      ['Monthly surplus', fmt(surplus), surplus > 0 ? 'down' : 'up'],
+      ['Savings rate', saveRate+'%', saveRate >= 20 ? 'down' : 'up'],
+      ['Total goals saved', fmt(goalTotal), 'down'],
+      ['Total debt remaining', fmt(debtTotal), debtTotal > 0 ? 'up' : 'down'],
+    ];
+    sumEl.innerHTML = rows.map(([lbl,val,cls]) =>
+      `<div class="report-compare"><span class="report-compare-lbl">${lbl}</span><span class="report-compare-val ${cls}">${val}</span></div>`
+    ).join('');
+  }
+
+  // Insight
+  const insightEl = document.getElementById('rpt-insight');
+  if (insightEl) {
+    const msgs = [];
+    if (S.income === 0) msgs.push('Set your monthly income in Settings to unlock your full report.');
+    else if (surplus < 0) msgs.push('Your expenses exceed your income this month. Review your categories to find where you can cut back.');
+    else if (saveRate >= 20) msgs.push(`You're saving ${saveRate}% of your income — that's above the recommended 20%. Keep it up! 💚`);
+    else msgs.push(`You're saving ${saveRate}% of your income. Aim for 20% to build real financial resilience.`);
+    const topCat = Object.entries(S.expenses.reduce((acc,e)=>{const k=e.category||'Other';acc[k]=(acc[k]||0)+(e.monthly_amount||0);return acc},{})).sort((a,b)=>b[1]-a[1])[0];
+    if (topCat) msgs.push(`Your biggest spend category is ${topCat[0].split(' ').slice(1).join(' ')} at ${fmt(topCat[1])}/month.`);
+    insightEl.textContent = msgs.join(' ');
+  }
 }
 
 </script>
