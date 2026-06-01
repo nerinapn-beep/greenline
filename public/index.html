@@ -7,8 +7,16 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#1A2E22">
 <title>Zest — Your Money, Handled.</title>
+<script>
+// Register service worker for push notifications
+if ('serviceWorker' in navigator && 'Notification' in window) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js').catch(function() {});
+  });
+}
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -752,6 +760,11 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         </div>
       </div>
       <div class="growth-body">
+        <div style="margin:0 16px 12px;background:linear-gradient(135deg,rgba(82,183,136,0.12),rgba(212,168,67,0.08));border:1px solid rgba(82,183,136,0.2);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px">
+          <div style="font-size:22px">🔔</div>
+          <div style="flex:1"><div style="font-size:12px;font-weight:700;color:var(--dark)">Daily reminders</div><div style="font-size:11px;color:var(--muted)">Get 3 nudges a day to log purchases</div></div>
+          <button onclick="enableNotifications()" style="background:var(--green-light);color:var(--dark);border:none;border-radius:10px;padding:8px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--fb);white-space:nowrap">Enable</button>
+        </div>
         <div class="sec-lbl">Wins this month</div>
         <div id="wins-list">
           <div class="win-card"><div class="win-icon">🏆</div><div><div class="win-title">Started your financial journey</div><div class="win-sub">The first step is always the hardest</div></div><div class="win-badge">NEW</div></div>
@@ -820,7 +833,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     <div class="hero">
       <div class="hero-topbar">
         <div><div class="hero-greet">Account</div><div style="font-family:var(--fd);font-size:22px;color:var(--white);font-weight:300">Settings</div></div>
-        <button class="icon-btn" onclick="showScreen('home')">← Back</button>
+        <button class="icon-btn" style="font-weight:700;font-size:14px" onclick="showScreen('home')">← Back</button>
       </div>
     </div>
     <div class="scroll-body" style="padding-top:12px">
@@ -918,7 +931,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     <div class="hero">
       <div class="hero-topbar">
         <div><div class="hero-greet">Spending</div><div style="font-family:var(--fd);font-size:22px;color:var(--white);font-weight:300">By <em style="color:var(--gold);font-style:italic">category</em></div></div>
-        <button class="icon-btn" onclick="showScreen('home')">← Back</button>
+        <button class="icon-btn" style="font-weight:700;font-size:14px" onclick="showScreen('home')">← Back</button>
       </div>
       <div style="font-size:12px;color:var(--muted);margin-top:4px">Tap any category to set a budget</div>
     </div>
@@ -994,7 +1007,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     <div class="hero">
       <div class="hero-topbar">
         <div><div class="hero-greet">Today's spend</div><div style="font-family:var(--fd);font-size:22px;color:var(--white);font-weight:300">Quick <em style="color:var(--gold);font-style:italic">log</em></div></div>
-        <button class="icon-btn" onclick="showScreen('home')">← Back</button>
+        <button class="icon-btn" style="font-weight:700;font-size:14px" onclick="showScreen('home')">← Back</button>
       </div>
       <div style="display:flex;gap:8px">
         <div style="flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:10px 12px"><div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">Spent today</div><div style="font-family:var(--fd);font-size:17px;color:var(--coral)" id="spend-today-total">R 0</div></div>
@@ -1023,8 +1036,8 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   <div class="screen" id="screen-report">
     <div class="hero">
       <div class="hero-topbar">
-        <div><div class="hero-greet" id="report-month-lbl">This month</div><div style="font-family:var(--fd);font-size:22px;color:var(--white);font-weight:300">Money <em style="color:var(--gold);font-style:italic">report</em></div></div>
-        <button class="icon-btn" onclick="showScreen('home')">← Back</button>
+        <div><div class="hero-greet" id="report-month-lbl">This month</div><div style="font-family:var(--fd);font-size:22px;color:var(--white);font-weight:300"><em style="color:var(--gold);font-style:normal;font-family:var(--fd)">Money</em> <em style="color:var(--green-light);font-style:italic">report</em></div></div>
+        <button class="icon-btn" style="font-weight:700;font-size:14px" onclick="showScreen('home')">← Back</button>
       </div>
       <div class="report-hero-stats">
         <div class="rhs"><div class="rhs-lbl">Income</div><div class="rhs-val green" id="rpt-income">R 0</div></div>
@@ -1204,7 +1217,7 @@ function signOut() {
     const raw = localStorage.getItem('zest_session');
     if (!raw) return;
     const sess = JSON.parse(raw);
-    const user = sess?.user || sess?.currentSession?.user;
+    const user = (sess && sess.user) || (sess && sess.currentSession && sess.currentSession.user);
     if (!user) return;
     S.user = user;
     const cache = JSON.parse(localStorage.getItem('zest_cache')||'{}');
@@ -1218,7 +1231,7 @@ function signOut() {
 })();
 
 sb.auth.onAuthStateChange(async (event, session) => {
-  if (session?.user) {
+  if ((session && session.user)) {
     S.user = session.user;
     document.getElementById('auth-screen').style.display='none';
     document.getElementById('app-screen').style.display='block';
@@ -1289,7 +1302,7 @@ function renderAll() {
 }
 
 function setupUserDisplay() {
-  const name = S.profile.full_name || S.user?.email || 'there';
+  const name = S.profile.full_name || (S.user && S.user.email) || 'there';
   const fname = name.split(' ')[0];
   const initials = name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
   document.getElementById('avatar-initials').textContent = initials;
@@ -1773,7 +1786,7 @@ showScreen = function(name, btn) {
   if(name==='report') renderReport();
   if(name==='settings'){
     document.getElementById('set-name').value = S.profile.full_name||'';
-    document.getElementById('set-email').value = S.user?.email||'';
+    document.getElementById('set-email').value = (S.user && S.user.email)||'';
     document.getElementById('set-income').value = S.salary || S.income||'';
     if(document.getElementById('set-other-income')) document.getElementById('set-other-income').value = S.otherIncome||'';
     document.getElementById('set-rate').value = S.saveRate||20;
@@ -1908,7 +1921,7 @@ function renderTimeline(){
   const sortedD=[...S.debts].sort((a,b)=>a.current_balance-b.current_balance);
   const extraD=Math.max(0,surplus-S.debts.reduce((s,d)=>s+(d.minimum_payment||0),0));
   sortedD.forEach(d=>{
-    const pay=d.minimum_payment+(sortedD[0]?.id===d.id?extraD:0);
+    const pay=d.minimum_payment+((sortedD[0] && sortedD[0].id)===d.id?extraD:0);
     const r=d.interest_rate/100/12;let m;
     if(r===0)m=pay>0?Math.ceil(d.current_balance/pay):Infinity;
     else if(pay<=d.current_balance*r)m=Infinity;
@@ -2064,7 +2077,7 @@ async function saveEditExpense() {
 const _origSaveFinances = saveFinances;
 async function saveFinances() {
   const salary = parseFloat(document.getElementById('set-income').value) || 0;
-  const other = parseFloat(document.getElementById('set-other-income')?.value) || 0;
+  const other = parseFloat((document.getElementById('set-other-income') && document.getElementById('set-other-income').value)) || 0;
   S.income = salary + other;
   S.otherIncome = other;
   S.salary = salary;
@@ -2171,7 +2184,7 @@ function renderReport() {
       byCat[k] = (byCat[k]||0) + (e.monthly_amount||0);
     });
     const sorted = Object.entries(byCat).sort((a,b) => b[1]-a[1]);
-    const max = sorted[0]?.[1] || 1;
+    const max = (sorted[0] && sorted[0][1]) || 1;
     if (!sorted.length) {
       catEl.innerHTML = '<div style="font-size:12px;color:var(--muted);text-align:center;padding:12px 0">No expenses added yet</div>';
     } else {
@@ -2227,6 +2240,65 @@ function renderReport() {
     if (topCat) msgs.push(`Your biggest spend category is ${topCat[0].split(' ').slice(1).join(' ')} at ${fmt(topCat[1])}/month.`);
     insightEl.textContent = msgs.join(' ');
   }
+}
+
+
+// ─── LOCAL PUSH NOTIFICATIONS ────────────────────────────────
+async function requestNotifPermission() {
+  if (!('Notification' in window)) return false;
+  if (Notification.permission === 'granted') return true;
+  if (Notification.permission === 'denied') return false;
+  const perm = await Notification.requestPermission();
+  return perm === 'granted';
+}
+
+function scheduleLocalNotifs() {
+  if (!('Notification' in window)) return;
+  // Clear existing scheduled notifs
+  if (window._zestNotifTimers) window._zestNotifTimers.forEach(t => clearTimeout(t));
+  window._zestNotifTimers = [];
+
+  const now = new Date();
+  const schedule = [
+    { hour: 8,  min: 0,  title: 'Good morning! 🌿', body: "Start your day right — have you logged yesterday's purchases?" },
+    { hour: 13, min: 0,  title: 'Zest check-in ⚡',  body: 'Afternoon reminder — log any purchases you made this morning.' },
+    { hour: 20, min: 0,  title: 'Evening log 🧾',    body: "Take 30 seconds to log today's spending before you forget!" },
+  ];
+
+  schedule.forEach(({ hour, min, title, body }) => {
+    const target = new Date();
+    target.setHours(hour, min, 0, 0);
+    if (target <= now) target.setDate(target.getDate() + 1); // Schedule for tomorrow if passed
+    const ms = target - now;
+    const t = setTimeout(() => {
+      if (Notification.permission === 'granted') {
+        new Notification(title, {
+          body,
+          icon: 'https://zest-za.netlify.app/favicon.ico',
+          tag: 'zest-' + hour,
+          renotify: true
+        });
+      }
+      scheduleLocalNotifs(); // Reschedule for next day
+    }, ms);
+    window._zestNotifTimers.push(t);
+  });
+}
+
+async function enableNotifications() {
+  const granted = await requestNotifPermission();
+  if (granted) {
+    scheduleLocalNotifs();
+    toast('Reminders enabled! You will get 3 daily nudges 🔔', 'success');
+    localStorage.setItem('zest_notifs_enabled', '1');
+  } else {
+    toast('Enable notifications in your browser settings to get reminders', 'error');
+  }
+}
+
+// Auto-start notifications if previously enabled
+if (localStorage.getItem('zest_notifs_enabled') === '1' && Notification.permission === 'granted') {
+  scheduleLocalNotifs();
 }
 
 </script>
