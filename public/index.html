@@ -365,6 +365,7 @@ html,body{height:100%;overflow:hidden;background:var(--dark-2);font-family:var(-
       <div class="auth-field"><label class="auth-label">Email</label><input type="email" id="si-email" class="auth-input" placeholder="you@email.com" /></div>
       <div class="auth-field"><label class="auth-label">Password</label><input type="password" id="si-password" class="auth-input" placeholder="••••••••" /></div>
       <button class="auth-btn" id="si-btn" onclick="signIn()">Sign in</button>
+      <div style="text-align:center;margin:10px 0 2px"><a href="#" onclick="forgotPassword(event)" style="color:var(--green-light);font-size:12px;text-decoration:none;opacity:0.85">Forgot password?</a></div>
       <div class="auth-switch">No account? <a onclick="switchAuthTab('signup',null)">Create one free</a></div>
     </div>
     <div id="auth-signup" style="display:none">
@@ -937,6 +938,25 @@ async function signUp() {
   btn.innerHTML='Create account'; btn.disabled=false;
 }
 
+
+async function forgotPassword(e) {
+  e.preventDefault();
+  const email = document.getElementById('si-email').value.trim();
+  if (!email) { showAuthErr('Enter your email address first, then tap Forgot password'); return; }
+  const btn = document.getElementById('si-btn');
+  btn.disabled = true; btn.textContent = 'Sending...';
+  const { error } = await sb.auth.resetPasswordForEmail(email, {
+    redirectTo: 'https://zest-za.netlify.app'
+  });
+  btn.disabled = false; btn.textContent = 'Sign in';
+  if (error) { showAuthErr(error.message); }
+  else {
+    const el = document.getElementById('auth-err');
+    el.style.cssText = 'display:block;background:rgba(82,183,136,0.12);color:#52B788;border:1px solid rgba(82,183,136,0.3);border-radius:10px;padding:10px 14px;font-size:13px;margin-top:8px';
+    el.textContent = '\u2713 Reset link sent to ' + email + ' \u2014 check your inbox';
+  }
+}
+
 function signOut() {
   try { localStorage.removeItem('zest_session'); localStorage.removeItem('zest_cache'); } catch(e) {}
   S.user=null; S.debts=[]; S.expenses=[]; S.profile={};
@@ -978,7 +998,7 @@ sb.auth.onAuthStateChange(async (event, session) => {
   }
 });
 
-async function syncFromServer_old() {
+async function syncFromServer() {
   if (!S.user) return;
   const uid = S.user.id;
   const [profRes, debtRes] = await Promise.all([
@@ -1675,8 +1695,8 @@ function showScreen(name,btn){
 // ─── HOME QUICK ACTION LINKS ──────────────────────────────────
 // Update quick action buttons 
 document.addEventListener('DOMContentLoaded',()=>{
-  // Sync server on load
-  syncFromServer();
+  // Only sync if already authenticated (onAuthStateChange handles new logins)
+  if (S && S.user) syncFromServer();
 });
 </script>
 </body>
