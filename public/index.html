@@ -16,7 +16,20 @@ if ('serviceWorker' in navigator && 'Notification' in window) {
 }
 </script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js"></script>
+<script>
+// Huawei/HarmonyOS compatible Supabase loader
+(function() {
+  var s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.min.js';
+  s.onerror = function() {
+    // Fallback to unpkg if jsdelivr fails
+    var s2 = document.createElement('script');
+    s2.src = 'https://unpkg.com/@supabase/supabase-js@2.39.3/dist/umd/supabase.js';
+    document.head.appendChild(s2);
+  };
+  document.head.appendChild(s);
+})();
+</script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -1123,6 +1136,20 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   </div>
 </div>
 
+<div id="huawei-banner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:#1A2E22;color:white;padding:12px 16px;font-size:13px;font-family:sans-serif;text-align:center;line-height:1.5">
+  🌿 For the best Zest experience on Huawei, open in <strong>Chrome</strong> browser.
+  <br><button onclick="document.getElementById('huawei-banner').style.display='none'" style="margin-top:6px;background:rgba(255,255,255,0.15);border:none;color:white;padding:5px 14px;border-radius:20px;font-size:12px;cursor:pointer">Got it</button>
+</div>
+<script>
+// Detect Huawei Browser (HuaweiBrowser UA contains "HuaweiBrowser" or "HUAWEI")
+(function() {
+  var ua = navigator.userAgent || '';
+  var isHuaweiBrowser = /HuaweiBrowser|HUAWEI/i.test(ua) && !/Chrome/i.test(ua);
+  if (isHuaweiBrowser) {
+    document.getElementById('huawei-banner').style.display = 'block';
+  }
+})();
+</script>
 <div class="toast-wrap" id="toast-wrap"></div>
 
 <script>
@@ -1131,10 +1158,20 @@ const SUPABASE_URL = 'https://vjjbfrkldngpycnahszh.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_JeHRbSVdecXLSh1dP4hEjQ_duVNGma9';
 
 // ─── INIT ─────────────────────────────────
-const { createClient } = supabase;
-const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: { persistSession: true, autoRefreshToken: true, storage: localStorage, storageKey: 'zest_session' }
-});
+// Safe Supabase init — compatible with HarmonyOS / Huawei Browser
+var sb;
+function initSupabase() {
+  try {
+    if (typeof supabase === 'undefined' || !supabase.createClient) {
+      setTimeout(initSupabase, 200); return;
+    }
+    sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true }
+    });
+    bootAuth();
+  } catch(e) { setTimeout(initSupabase, 200); }
+}
+initSupabase();
 
 // ─── STATE ────────────────────────────────
 const S = {
@@ -1212,6 +1249,7 @@ function signOut() {
 }
 
 // ─── BOOT ─────────────────────────────────
+function bootAuth() {
 (function instantBoot() {
   try {
     const raw = localStorage.getItem('zest_session');
@@ -1243,6 +1281,7 @@ sb.auth.onAuthStateChange(async (event, session) => {
     document.getElementById('app-screen').style.display='none';
   }
 });
+} // end bootAuth
 
 async function syncFromServer() {
   if (!S.user) return;
