@@ -1586,6 +1586,13 @@ function toggleVoice() {
 }
 
 function startListening() {
+  // Unlock iOS/Safari speech synthesis on user gesture tap
+  try {
+    const u = new SpeechSynthesisUtterance('');
+    u.volume = 0;
+    window.speechSynthesis.speak(u);
+    window.speechSynthesis.cancel();
+  } catch(e) {}
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) { showVoiceResult(null,'error','Voice not supported on this browser. Use Chrome or Safari.'); return; }
   recognition = new SR();
@@ -1660,7 +1667,7 @@ Respond ONLY with valid JSON:
     document.getElementById('mic-hint').textContent='Tap mic to check another purchase';
     showVoiceResult(p.verdict, p.headline, p.spoken_response, p.detail);
     // Auto speak the short answer immediately
-    setTimeout(()=>speakText(p.spoken_response), 400);
+    setTimeout(()=>speakText(p.spoken_response), 600);
     setTimeout(()=>{const ra=document.getElementById('voice-result-area');if(ra)ra.insertAdjacentHTML('beforeend','<p style="font-size:10px;color:#7A9E87;text-align:center;font-style:italic;margin-top:8px;padding:0 8px">Zest shows you your options — the decision is always yours. This is not financial advice.</p>');},400);
   } catch(err) {
     mic.classList.remove('processing');
@@ -1688,16 +1695,35 @@ function showVoiceResult(verdict, headline, body, detail) {
 }
 
 function speakText(text) {
+  if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
   function doSpeak() {
     const u = new SpeechSynthesisUtterance(text);
-    u.rate=0.92; u.pitch=1.05; u.volume=1;
+    u.rate = 0.9;
+    u.pitch = 1.05;
+    u.volume = 1;
+    u.lang = 'en-ZA';
     const voices = window.speechSynthesis.getVoices();
-    const v = voices.find(v=>v.name==='Samantha')||voices.find(v=>v.name==='Karen')||voices.find(v=>v.name.includes('Google')&&v.name.includes('Female'))||voices.find(v=>v.lang.startsWith('en'));
-    if(v){u.voice=v;u.lang=v.lang;}else{u.lang='en-GB';}
+    // Prefer natural English voices
+    const preferred = ['Samantha','Karen','Daniel','Moira','Tessa'];
+    let v = null;
+    for (const name of preferred) {
+      v = voices.find(voice => voice.name === name);
+      if (v) break;
+    }
+    if (!v) v = voices.find(voice => voice.lang && voice.lang.startsWith('en'));
+    if (v) { u.voice = v; u.lang = v.lang; }
+    // iOS Safari workaround — resume if paused
+    if (window.speechSynthesis.paused) window.speechSynthesis.resume();
     window.speechSynthesis.speak(u);
   }
-  if(window.speechSynthesis.getVoices().length===0){window.speechSynthesis.addEventListener('voiceschanged',doSpeak,{once:true});setTimeout(doSpeak,500);}else{doSpeak();}
+  const voices = window.speechSynthesis.getVoices();
+  if (!voices || voices.length === 0) {
+    window.speechSynthesis.addEventListener('voiceschanged', doSpeak, {once: true});
+    setTimeout(doSpeak, 800);
+  } else {
+    doSpeak();
+  }
 }
 
 // ─── AVATAR MENU ──────────────────────────
