@@ -334,7 +334,7 @@ html,body{height:100%;overflow:hidden;background:var(--dark-2);font-family:var(-
 .settings-card{background:var(--white);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow);margin-bottom:12px}
 .hero-topbar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
 .hero-greet{font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px}
-.icon-btn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:100px;padding:8px 16px;font-size:13px;font-weight:700;color:var(--white);cursor:pointer;font-family:var(--fb);-webkit-tap-highlight-color:transparent;min-height:36px;display:flex;align-items:center}
+.icon-btn{background:rgba(0,0,0,0.08);border:1.5px solid rgba(0,0,0,0.15);border-radius:100px;padding:8px 18px;font-size:13px;font-weight:800;color:var(--dark);cursor:pointer;font-family:var(--fb);-webkit-tap-highlight-color:transparent;min-height:40px;display:inline-flex;align-items:center;gap:4px}
 /* ── GOALS ── */
 .goal-card{background:var(--white);border-radius:16px;padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow)}
 .gc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px}
@@ -421,7 +421,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 .spend-item-amt{font-size:13px;font-weight:700;color:var(--dark);font-family:var(--fd);}
 .spend-item-del{background:none;border:none;color:var(--muted);font-size:14px;cursor:pointer;padding:4px;}
 .spend-empty{text-align:center;padding:40px 20px;color:var(--muted);}
-.spend-add-bar{position:sticky;bottom:0;background:var(--white);border-top:1px solid var(--green-pale);padding:12px 16px;display:flex;gap:8px;}
+.spend-add-bar{position:sticky;bottom:0;background:var(--white);border-top:1px solid var(--green-pale);padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));display:flex;gap:8px;flex-wrap:nowrap;z-index:10;}
 .spend-add-input{flex:1;border:1px solid var(--green-pale);border-radius:12px;padding:10px 12px;font-size:13px;font-family:var(--fb);color:var(--dark);background:var(--cream);}
 .spend-add-btn{background:var(--green-light);color:var(--dark);border:none;border-radius:12px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fb);}
 
@@ -1016,7 +1016,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 
 
   <!-- DAILY SPEND LOGGER SCREEN -->
-  <div class="screen" id="screen-spend">
+  <div class="screen" id="screen-spend" style="display:flex;flex-direction:column">
     <div class="hero">
       <div class="hero-topbar" style="padding-top:max(env(safe-area-inset-top),8px)">
         <div><div class="hero-greet">Today's spend</div><div style="font-family:var(--fd);font-size:22px;color:var(--white);font-weight:300">Quick <em style="color:var(--gold);font-style:italic">log</em></div></div>
@@ -1027,11 +1027,11 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         <div style="flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:10px 12px"><div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">This week</div><div style="font-family:var(--fd);font-size:17px;color:var(--white)" id="spend-week-total">R 0</div></div>
       </div>
     </div>
-    <div class="scroll-body" style="padding-bottom:100px" id="spend-log-list"></div>
+    <div class="scroll-body" style="padding-bottom:160px;min-height:0;flex:1" id="spend-log-list"></div>
     <div class="spend-add-bar">
-      <input class="spend-add-input" id="spend-desc" placeholder="e.g. Coffee at Vida"/>
-      <input class="spend-add-input" id="spend-amt" type="number" placeholder="R" style="width:70px;flex:none"/>
-      <select class="spend-add-input" id="spend-cat" style="width:80px;flex:none;font-size:11px">
+      <input class="spend-add-input" id="spend-desc" placeholder="What did you buy?" style="min-width:0;flex:1"/>
+      <input class="spend-add-input" id="spend-amt" type="number" placeholder="R" style="width:60px;flex:none"/>
+      <select class="spend-add-input" id="spend-cat" style="width:70px;flex:none;font-size:10px">
         <option value="🛒 Food">🛒 Food</option>
         <option value="🚌 Transport">🚌 Transport</option>
         <option value="☕ Coffee">☕ Coffee</option>
@@ -1041,7 +1041,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         <option value="💊 Health">💊 Health</option>
         <option value="📦 Other">📦 Other</option>
       </select>
-      <button class="spend-add-btn" onclick="addSpend()">+ Log</button>
+      <button class="spend-add-btn" onclick="addSpend()" style="flex:none;white-space:nowrap;min-width:52px">Log</button>
     </div>
   </div>
 
@@ -1623,24 +1623,28 @@ async function runVoiceCheck(transcript) {
   const surplus = Math.max(0, S.income - S.debts.reduce((s,d)=>s+d.minimum_payment,0));
   const totalDebt = S.debts.reduce((s,d)=>s+d.current_balance,0);
 
-  const prompt = `You are Zest, a warm and smart personal finance AI for South African users. Analyse this voice purchase request.
+  const prompt = `You are Zest, a personal finance AI. Give a VERY short verdict on this purchase request.
 
 USER SAID: "${transcript}"
 
 FINANCIAL POSITION:
-- Monthly income: R ${S.income}
-- Monthly surplus: R ${surplus} ${surplus<0?'(DEFICIT)':''}
+- Monthly surplus after expenses: R ${surplus} ${surplus<0?'(IN DEFICIT — say NO)':''}
 - Total debt: R ${totalDebt}
-- Debts: ${S.debts.length>0?S.debts.map(d=>`${d.name} R${Math.round(d.current_balance)}`).join(', '):'None'}
 
-Extract the purchase from what they said. Give a fast, warm, direct verdict.
+RULES:
+- If surplus is negative: always NO
+- If purchase amount > 50% of surplus: NO or MAYBE
+- Keep spoken_response to ONE sentence only — just YES or NO and one reason
+- Do NOT list their accounts, debts or income in the spoken response
+- Do NOT read out their financial summary
+- Just answer the question directly like a friend texting back
 
 Respond ONLY with valid JSON:
 {
   "verdict": "YES" or "NO" or "MAYBE",
   "headline": "5 words max",
-  "spoken_response": "2-3 sentences. Warm, direct, like a smart friend. Start with YES/NO/MAYBE. Reference their actual numbers.",
-  "detail": "One extra sentence for display"
+  "spoken_response": "ONE sentence only. Start with YES/NO/MAYBE then one short reason.",
+  "detail": "One line showing the key number that drove the decision"
 }`;
 
   try {
@@ -1655,7 +1659,7 @@ Respond ONLY with valid JSON:
     mic.classList.remove('processing');
     document.getElementById('mic-hint').textContent='Tap mic to check another purchase';
     showVoiceResult(p.verdict, p.headline, p.spoken_response, p.detail);
-    setTimeout(()=>speakText(p.spoken_response), 300);
+    // Short answer only — no full readout
     setTimeout(()=>{const ra=document.getElementById('voice-result-area');if(ra)ra.insertAdjacentHTML('beforeend','<p style="font-size:10px;color:#7A9E87;text-align:center;font-style:italic;margin-top:8px;padding:0 8px">Zest shows you your options — the decision is always yours. This is not financial advice.</p>');},400);
   } catch(err) {
     mic.classList.remove('processing');
