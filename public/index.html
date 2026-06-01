@@ -72,12 +72,12 @@ html,body{height:100%;overflow:hidden;background:var(--dark-2);font-family:var(-
 .screen.active{opacity:1;pointer-events:all}
 
 /* ── ONBOARDING ── */
-.ob-screen{background:var(--dark);padding:env(safe-area-inset-top,40px) 28px 32px;justify-content:space-between}
+.ob-screen{background:var(--dark);padding:env(safe-area-inset-top,40px) 28px env(safe-area-inset-bottom,32px);overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column}
 .ob-logo{font-family:var(--fd);font-size:52px;font-style:italic;font-weight:300;background:linear-gradient(135deg,var(--gold-dark),var(--gold),var(--gold-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-1.5px;line-height:1;margin-bottom:6px}
 .ob-tag{font-size:10px;color:var(--muted);letter-spacing:2.5px;text-transform:uppercase;margin-bottom:48px}
 .ob-q{font-family:var(--fd);font-size:30px;color:var(--white);font-weight:300;line-height:1.3;margin-bottom:8px}
 .ob-sub{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:24px}
-.ob-opts{display:flex;flex-direction:column;gap:10px;flex:1}
+.ob-opts{display:flex;flex-direction:column;gap:10px;margin:16px 0}
 .ob-opt{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:var(--r-lg);padding:15px 18px;color:var(--white);font-family:var(--fb);cursor:pointer;transition:all .25s;text-align:left;display:flex;align-items:center;gap:12px}
 .ob-opt.sel,.ob-opt:hover{background:rgba(82,183,136,0.14);border-color:var(--green-light);color:var(--green-light)}
 .ob-opt-icon{font-size:22px;flex-shrink:0}
@@ -334,7 +334,7 @@ html,body{height:100%;overflow:hidden;background:var(--dark-2);font-family:var(-
 .settings-card{background:var(--white);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow);margin-bottom:12px}
 .hero-topbar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
 .hero-greet{font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px}
-.icon-btn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:100px;padding:6px 12px;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;font-family:var(--fb)}
+.icon-btn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:100px;padding:8px 16px;font-size:13px;font-weight:700;color:var(--white);cursor:pointer;font-family:var(--fb);-webkit-tap-highlight-color:transparent;min-height:36px;display:flex;align-items:center}
 /* ── GOALS ── */
 .goal-card{background:var(--white);border-radius:16px;padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow)}
 .gc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px}
@@ -844,9 +844,9 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   <!-- SETTINGS SCREEN -->
   <div class="screen" id="screen-settings">
     <div class="hero">
-      <div class="hero-topbar">
+      <div class="hero-topbar" style="padding-top:max(env(safe-area-inset-top),8px)">
         <div><div class="hero-greet">Account</div><div style="font-family:var(--fd);font-size:22px;color:var(--white);font-weight:300">Settings</div></div>
-        <button class="icon-btn" style="font-weight:700;font-size:14px" onclick="showScreen('home')">← Back</button>
+        <button class="icon-btn" onclick="showScreen('home')">← Back</button>
       </div>
     </div>
     <div class="scroll-body" style="padding-top:12px">
@@ -942,9 +942,9 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   <!-- CATEGORY BUDGET SCREEN -->
   <div class="screen" id="screen-categories">
     <div class="hero">
-      <div class="hero-topbar">
+      <div class="hero-topbar" style="padding-top:max(env(safe-area-inset-top),8px)">
         <div><div class="hero-greet">Spending</div><div style="font-family:var(--fd);font-size:22px;color:var(--white);font-weight:300">By <em style="color:var(--gold);font-style:italic">category</em></div></div>
-        <button class="icon-btn" style="font-weight:700;font-size:14px" onclick="showScreen('home')">← Back</button>
+        <button class="icon-btn" onclick="showScreen('home')">← Back</button>
       </div>
       <div style="font-size:12px;color:var(--muted);margin-top:4px">Tap any category to set a budget</div>
     </div>
@@ -1018,9 +1018,9 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   <!-- DAILY SPEND LOGGER SCREEN -->
   <div class="screen" id="screen-spend">
     <div class="hero">
-      <div class="hero-topbar">
+      <div class="hero-topbar" style="padding-top:max(env(safe-area-inset-top),8px)">
         <div><div class="hero-greet">Today's spend</div><div style="font-family:var(--fd);font-size:22px;color:var(--white);font-weight:300">Quick <em style="color:var(--gold);font-style:italic">log</em></div></div>
-        <button class="icon-btn" style="font-weight:700;font-size:14px" onclick="showScreen('home')">← Back</button>
+        <button class="icon-btn" onclick="showScreen('home')">← Back</button>
       </div>
       <div style="display:flex;gap:8px">
         <div style="flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:10px 12px"><div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">Spent today</div><div style="font-family:var(--fd);font-size:17px;color:var(--coral)" id="spend-today-total">R 0</div></div>
@@ -1050,7 +1050,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     <div class="hero">
       <div class="hero-topbar">
         <div><div class="hero-greet" id="report-month-lbl">This month</div><div style="font-family:var(--fd);font-size:22px;color:var(--white);font-weight:300"><em style="color:var(--gold);font-style:normal;font-family:var(--fd)">Money</em> <em style="color:var(--green-light);font-style:italic">report</em></div></div>
-        <button class="icon-btn" style="font-weight:700;font-size:14px" onclick="showScreen('home')">← Back</button>
+        <button class="icon-btn" onclick="showScreen('home')">← Back</button>
       </div>
       <div class="report-hero-stats">
         <div class="rhs"><div class="rhs-lbl">Income</div><div class="rhs-val green" id="rpt-income">R 0</div></div>
