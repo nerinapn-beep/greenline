@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#1A2E22">
@@ -347,6 +347,29 @@ html,body{height:100%;overflow:hidden;background:var(--dark-2);font-family:var(-
 .zest-icon-card{background:var(--cream);border-radius:5px;width:20px;height:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
 .zest-icon-word{font-family:var(--fd);font-size:8px;font-style:italic;font-weight:400;background:linear-gradient(135deg,var(--gold-dark),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
 .zest-icon-dot{width:3px;height:3px;border-radius:50%;background:var(--gold)}
+
+/* Edit expense button */
+.item-edit{background:var(--green-pale);color:var(--green);border:none;border-radius:8px;padding:4px 8px;font-size:11px;cursor:pointer;margin-right:4px;font-weight:600;}
+
+/* Category budget grid */
+.cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px 16px 0;}
+.cat-tile{background:var(--white);border-radius:16px;padding:14px 10px;text-align:center;box-shadow:var(--shadow);cursor:pointer;transition:all .2s;border:2px solid transparent;-webkit-tap-highlight-color:transparent;}
+.cat-tile:active{transform:scale(.97);}
+.cat-tile.over-budget{border-color:var(--coral);}
+.cat-tile.on-track{border-color:var(--green-light);}
+.cat-tile-icon{font-size:26px;margin-bottom:5px;}
+.cat-tile-name{font-size:10px;font-weight:700;color:var(--dark);letter-spacing:.3px;margin-bottom:3px;text-transform:uppercase;}
+.cat-tile-amt{font-size:13px;font-weight:700;color:var(--green);font-family:var(--fd);}
+.cat-tile-budget{font-size:10px;color:var(--muted);margin-top:1px;}
+.cat-bar{height:4px;background:var(--green-pale);border-radius:100px;margin-top:7px;overflow:hidden;}
+.cat-bar-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--green),var(--green-light));transition:width .5s;}
+.cat-bar-fill.over{background:linear-gradient(90deg,var(--coral),#ff6b6b);}
+
+/* Huawei/older Android WebView fixes */
+html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
+#auth-screen,#app-screen{-webkit-transform:translateZ(0);transform:translateZ(0);-webkit-overflow-scrolling:touch;}
+.screen{-webkit-backface-visibility:hidden;backface-visibility:hidden;}
+* {-webkit-box-sizing:border-box;}
 </style>
 </head>
 <body>
@@ -744,7 +767,8 @@ html,body{height:100%;overflow:hidden;background:var(--dark-2);font-family:var(-
       </div>
       <div class="section-lbl">Finances</div>
       <div class="settings-card">
-        <div class="field"><label class="fl">Net monthly income (R)</label><input class="fi" type="number" id="set-income" placeholder="e.g. 25000"/></div>
+        <div class="field"><label class="fl">Net monthly salary (R)</label><input class="fi" type="number" id="set-income" placeholder="e.g. 25000"/></div>
+        <div class="field"><label class="fl">Other income (R) <span style="font-size:10px;color:var(--muted);font-weight:400">freelance, rental, etc.</span></label><input class="fi" type="number" id="set-other-income" placeholder="e.g. 5000 (optional)"/></div>
         <div class="field"><label class="fl">Savings rate target</label>
           <select class="fi" id="set-rate">
             <option value="10">10% — starter</option>
@@ -820,6 +844,82 @@ html,body{height:100%;overflow:hidden;background:var(--dark-2);font-family:var(-
       <button class="nav-btn" onclick="showScreen('voice',this)"><span class="ni">🎤</span>Talk<div class="nav-dot"></div></button>
       <button class="nav-btn" onclick="showScreen('debt',this)"><span class="ni">🔓</span>Debt<div class="nav-dot"></div></button>
       <button class="nav-btn" onclick="showScreen('growth',this)"><span class="ni">🌱</span>Growth<div class="nav-dot"></div></button>
+    </div>
+  </div>
+
+
+  <!-- CATEGORY BUDGET SCREEN -->
+  <div class="screen" id="screen-categories">
+    <div class="hero">
+      <div class="hero-topbar">
+        <div><div class="hero-greet">Spending</div><div style="font-family:var(--fd);font-size:22px;color:var(--white);font-weight:300">By <em style="color:var(--gold);font-style:italic">category</em></div></div>
+        <button class="icon-btn" onclick="showScreen('home')">← Back</button>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-top:4px">Tap any category to set a budget</div>
+    </div>
+    <div class="scroll-body" style="padding-top:10px">
+      <div class="cat-grid" id="cat-grid"></div>
+      <div style="height:80px"></div>
+    </div>
+    <div class="nav">
+      <button class="nav-btn" onclick="showScreen('home',this)"><span class="ni">🏠</span>Home<div class="nav-dot"></div></button>
+      <button class="nav-btn" onclick="showScreen('nudges',this)"><span class="ni">⚡</span>Nudges<div class="nav-dot"></div></button>
+      <button class="nav-btn" onclick="showScreen('voice',this)"><span class="ni">🎤</span>Talk<div class="nav-dot"></div></button>
+      <button class="nav-btn" onclick="showScreen('debt',this)"><span class="ni">🔓</span>Debt<div class="nav-dot"></div></button>
+      <button class="nav-btn" onclick="showScreen('growth',this)"><span class="ni">🌱</span>Growth<div class="nav-dot"></div></button>
+    </div>
+  </div>
+
+  <!-- CATEGORY BUDGET MODAL -->
+  <div class="modal-overlay" id="cat-budget-modal">
+    <div class="modal-sheet">
+      <div class="sh-handle"></div>
+      <div class="modal-title" id="cat-modal-title">Set budget</div>
+      <div style="padding:0 20px 20px">
+        <div style="text-align:center;font-size:40px;margin-bottom:8px" id="cat-modal-icon"></div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:6px">Spent this month</div>
+        <div style="font-size:22px;font-weight:700;color:var(--dark);font-family:var(--fd);margin-bottom:16px" id="cat-modal-spent"></div>
+        <div class="field"><label class="fl">Monthly budget for this category (R)</label><input class="fi" type="number" id="cat-budget-input" placeholder="e.g. 3000"/></div>
+        <button class="submit-btn" onclick="saveCatBudget()">Set budget ✓</button>
+        <button class="cancel-btn" onclick="closeModal('cat-budget-modal')">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT EXPENSE MODAL -->
+  <div class="modal-overlay" id="edit-expense-modal">
+    <div class="modal-sheet">
+      <div class="sh-handle"></div>
+      <div class="modal-title">Edit expense</div>
+      <input type="hidden" id="edit-exp-id"/>
+      <div style="padding:0 20px 20px">
+        <div class="field"><label class="fl">Name</label><input class="fi" type="text" id="edit-exp-name"/></div>
+        <div class="field"><label class="fl">Amount (R)</label><input class="fi" type="number" id="edit-exp-amount"/></div>
+        <div class="field"><label class="fl">Category</label>
+          <select class="fi" id="edit-exp-cat">
+            <option value="🏠 Housing">🏠 Housing</option>
+            <option value="🛒 Food">🛒 Food</option>
+            <option value="🚌 Transport">🚌 Transport</option>
+            <option value="💡 Utilities">💡 Utilities</option>
+            <option value="❤️ Health">❤️ Health</option>
+            <option value="🏋️ Gym">🏋️ Gym</option>
+            <option value="📚 Education">📚 Education</option>
+            <option value="🎬 Entertainment">🎬 Entertainment</option>
+            <option value="👗 Clothing">👗 Clothing</option>
+            <option value="💳 Debt">💳 Debt</option>
+            <option value="📦 Other">📦 Other</option>
+          </select>
+        </div>
+        <div class="field"><label class="fl">Frequency</label>
+          <select class="fi" id="edit-exp-freq">
+            <option value="monthly">Monthly (fixed)</option>
+            <option value="weekly">Weekly (×4.33)</option>
+            <option value="once">Once-off (÷12)</option>
+          </select>
+        </div>
+        <button class="submit-btn" onclick="saveEditExpense()">Save changes ✓</button>
+        <button class="cancel-btn" onclick="closeModal('edit-expense-modal')">Cancel</button>
+      </div>
     </div>
   </div>
 
@@ -1535,10 +1635,12 @@ showScreen = function(name, btn) {
   _origShowScreen(name, btn);
   if(name==='goals') renderGoals();
   if(name==='timeline') renderTimeline();
+  if(name==='categories') renderCategories();
   if(name==='settings'){
     document.getElementById('set-name').value = S.profile.full_name||'';
     document.getElementById('set-email').value = S.user?.email||'';
-    document.getElementById('set-income').value = S.income||'';
+    document.getElementById('set-income').value = S.salary || S.income||'';
+    if(document.getElementById('set-other-income')) document.getElementById('set-other-income').value = S.otherIncome||'';
     document.getElementById('set-rate').value = S.saveRate||20;
     renderExpSettings();
   }
@@ -1576,7 +1678,7 @@ function renderExpSettings(){
   const totEl=document.getElementById('exp-total-settings');
   if(totEl)totEl.textContent=fmt(total);
   if(!S.expenses.length){el.innerHTML='<div style="font-size:12px;color:var(--muted);text-align:center;padding:12px 0">No expenses added yet</div>';return;}
-  el.innerHTML=S.expenses.map(e=>`<div class="item-row"><span class="item-cat">${(e.category||'').split(' ')[0]}</span><span class="item-name">${e.name}</span><span class="item-amount">${fmt(e.monthly_amount)}</span><button class="item-del" onclick="delExpense('${e.id}')">✕</button></div>`).join('');
+  el.innerHTML=S.expenses.map(e=>`<div class="item-row"><span class="item-cat">${(e.category||'').split(' ')[0]}</span><span class="item-name">${e.name}</span><span class="item-amount">${fmt(e.monthly_amount)}</span><button class="item-edit" onclick="editExpense('${e.id}')">✎</button><button class="item-del" onclick="delExpense('${e.id}')">✕</button></div>`).join('');
 }
 
 // ─── GOALS ────────────────────────────────────────────────────
@@ -1698,6 +1800,114 @@ document.addEventListener('DOMContentLoaded',()=>{
   // Only sync if already authenticated (onAuthStateChange handles new logins)
   if (S && S.user) syncFromServer();
 });
+
+// ─── CATEGORY DEFINITIONS ─────────────────────────────────────
+const CATS = [
+  {key:'🏠 Housing', icon:'🏠', name:'Housing'},
+  {key:'🛒 Food', icon:'🛒', name:'Food'},
+  {key:'🚌 Transport', icon:'🚌', name:'Transport'},
+  {key:'💡 Utilities', icon:'💡', name:'Utilities'},
+  {key:'❤️ Health', icon:'❤️', name:'Health'},
+  {key:'🏋️ Gym', icon:'🏋️', name:'Gym'},
+  {key:'🎬 Entertainment', icon:'🎬', name:'Entertainment'},
+  {key:'📚 Education', icon:'📚', name:'Education'},
+  {key:'👗 Clothing', icon:'👗', name:'Clothing'},
+  {key:'💳 Debt', icon:'💳', name:'Debt'},
+  {key:'📦 Other', icon:'📦', name:'Other'},
+];
+
+// ─── CATEGORY BUDGET SCREEN ───────────────────────────────────
+let _currentCatKey = null;
+
+function renderCategories() {
+  const grid = document.getElementById('cat-grid');
+  if (!grid) return;
+  const budgets = JSON.parse(localStorage.getItem('zest_cat_budgets') || '{}');
+  grid.innerHTML = CATS.map(cat => {
+    const spent = S.expenses
+      .filter(e => (e.category || '') === cat.key)
+      .reduce((s, e) => s + (e.monthly_amount || 0), 0);
+    const budget = budgets[cat.key] || 0;
+    const pct = budget > 0 ? Math.min(100, Math.round((spent / budget) * 100)) : 0;
+    const overBudget = budget > 0 && spent > budget;
+    const onTrack = budget > 0 && spent <= budget;
+    return `<div class="cat-tile ${overBudget ? 'over-budget' : onTrack ? 'on-track' : ''}" onclick="openCatBudget('${cat.key}')">
+      <div class="cat-tile-icon">${cat.icon}</div>
+      <div class="cat-tile-name">${cat.name}</div>
+      <div class="cat-tile-amt">${spent > 0 ? fmt(spent) : 'R 0'}</div>
+      <div class="cat-tile-budget">${budget > 0 ? 'Budget: ' + fmt(budget) : 'Tap to set budget'}</div>
+      ${budget > 0 ? `<div class="cat-bar"><div class="cat-bar-fill ${overBudget ? 'over' : ''}" style="width:${pct}%"></div></div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function openCatBudget(catKey) {
+  _currentCatKey = catKey;
+  const cat = CATS.find(c => c.key === catKey);
+  const budgets = JSON.parse(localStorage.getItem('zest_cat_budgets') || '{}');
+  const spent = S.expenses.filter(e => (e.category||'') === catKey).reduce((s,e) => s+(e.monthly_amount||0), 0);
+  document.getElementById('cat-modal-title').textContent = cat.name + ' Budget';
+  document.getElementById('cat-modal-icon').textContent = cat.icon;
+  document.getElementById('cat-modal-spent').textContent = fmt(spent) + ' spent this month';
+  document.getElementById('cat-budget-input').value = budgets[catKey] || '';
+  document.getElementById('cat-budget-modal').classList.add('open');
+}
+
+function saveCatBudget() {
+  if (!_currentCatKey) return;
+  const val = parseFloat(document.getElementById('cat-budget-input').value) || 0;
+  const budgets = JSON.parse(localStorage.getItem('zest_cat_budgets') || '{}');
+  if (val > 0) budgets[_currentCatKey] = val;
+  else delete budgets[_currentCatKey];
+  localStorage.setItem('zest_cat_budgets', JSON.stringify(budgets));
+  closeModal('cat-budget-modal');
+  renderCategories();
+  toast('Budget set ✓', 'success');
+}
+
+// ─── EDIT EXPENSE ─────────────────────────────────────────────
+function editExpense(id) {
+  const e = S.expenses.find(e => e.id === id);
+  if (!e) return;
+  document.getElementById('edit-exp-id').value = id;
+  document.getElementById('edit-exp-name').value = e.name || '';
+  document.getElementById('edit-exp-amount').value = e.amount || e.monthly_amount || '';
+  document.getElementById('edit-exp-cat').value = e.category || '📦 Other';
+  document.getElementById('edit-exp-freq').value = e.frequency || 'monthly';
+  document.getElementById('edit-expense-modal').classList.add('open');
+}
+
+async function saveEditExpense() {
+  const id = document.getElementById('edit-exp-id').value;
+  const name = document.getElementById('edit-exp-name').value.trim();
+  const amount = parseFloat(document.getElementById('edit-exp-amount').value) || 0;
+  const cat = document.getElementById('edit-exp-cat').value;
+  const freq = document.getElementById('edit-exp-freq').value;
+  if (!name || amount <= 0) { toast('Fill in name and amount', 'error'); return; }
+  const monthly = freq === 'weekly' ? amount * 4.33 : freq === 'once' ? amount / 12 : amount;
+  const idx = S.expenses.findIndex(e => e.id === id);
+  if (idx === -1) return;
+  S.expenses[idx] = { ...S.expenses[idx], name, amount, monthly_amount: monthly, category: cat, frequency: freq };
+  closeModal('edit-expense-modal');
+  renderHome(); renderExpSettings(); saveCache();
+  toast('Expense updated ✓', 'success');
+  if (S.user) sb.from('expenses').update({ name, amount, monthly_amount: monthly, category: cat, frequency: freq }).eq('id', id).then(() => {});
+}
+
+// ─── OTHER INCOME SAVE ────────────────────────────────────────
+// Patch saveFinances to include other income
+const _origSaveFinances = saveFinances;
+async function saveFinances() {
+  const salary = parseFloat(document.getElementById('set-income').value) || 0;
+  const other = parseFloat(document.getElementById('set-other-income')?.value) || 0;
+  S.income = salary + other;
+  S.otherIncome = other;
+  S.salary = salary;
+  S.saveRate = parseInt(document.getElementById('set-rate').value) || 20;
+  saveCache(); renderHome(); toast('Finances saved ✓', 'success');
+  if (S.user) sb.from('profiles').update({ monthly_income: S.income, save_rate: S.saveRate }).eq('id', S.user.id).then(() => {});
+}
+
 </script>
 </body>
 </html>
