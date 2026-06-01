@@ -393,10 +393,10 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 * {-webkit-box-sizing:border-box;}
 
 /* ── Savings Goals — circular progress rings ── */
-.goals-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:14px 16px 0;}
-.goal-ring-card{background:var(--white);border-radius:20px;padding:16px 12px;box-shadow:var(--shadow);text-align:center;position:relative;}
-.ring-wrap{position:relative;width:80px;height:80px;margin:0 auto 10px;}
-.ring-wrap svg{transform:rotate(-90deg);}
+.goals-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:12px 14px 0;width:100%;box-sizing:border-box;}
+.goal-ring-card{background:var(--white);border-radius:20px;padding:12px 8px;box-shadow:var(--shadow);text-align:center;position:relative;min-width:0;overflow:hidden;}
+.ring-wrap{position:relative;width:72px;height:72px;margin:0 auto 8px;}
+.ring-wrap svg{transform:rotate(-90deg);width:72px;height:72px;}
 .ring-bg{fill:none;stroke:var(--green-pale);stroke-width:7;}
 .ring-fill{fill:none;stroke-width:7;stroke-linecap:round;transition:stroke-dashoffset .6s ease;}
 .ring-pct{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:14px;font-weight:700;color:var(--dark);font-family:var(--fd);}
@@ -405,8 +405,8 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 .ring-saved{font-size:11px;color:var(--green);font-weight:600;}
 .ring-target{font-size:10px;color:var(--muted);}
 .ring-months{font-size:10px;color:var(--muted);margin-top:3px;}
-.ring-contrib{display:flex;gap:6px;margin-top:10px;}
-.ring-input{flex:1;border:1px solid var(--green-pale);border-radius:10px;padding:7px 8px;font-size:12px;font-family:var(--fb);color:var(--dark);background:var(--cream);min-width:0;}
+.ring-contrib{display:flex;gap:4px;margin-top:8px;}
+.ring-input{flex:1;border:1px solid var(--green-pale);border-radius:10px;padding:6px 6px;font-size:11px;font-family:var(--fb);color:var(--dark);background:var(--cream);min-width:0;width:0;}
 .ring-add-btn{background:var(--green-pale);color:var(--green);border:none;border-radius:10px;padding:7px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--fb);white-space:nowrap;}
 .ring-del-btn{background:var(--coral-pale);color:var(--coral);border:none;border-radius:10px;padding:7px 8px;font-size:11px;cursor:pointer;font-weight:700;}
 
@@ -426,10 +426,10 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 .spend-add-btn{background:var(--green-light);color:var(--dark);border:none;border-radius:12px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--fb);}
 
 /* ── Monthly Report ── */
-.report-hero-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px 14px;}
-.rhs{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:12px;}
+.report-hero-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 14px 12px;}
+.rhs{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:10px;}
 .rhs-lbl{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
-.rhs-val{font-size:18px;font-weight:700;font-family:var(--fd);color:var(--white);}
+.rhs-val{font-size:16px;font-weight:700;font-family:var(--fd);color:var(--white);}
 .rhs-val.green{color:var(--green-light);}
 .rhs-val.coral{color:var(--coral);}
 .report-section{margin:0 16px 14px;background:var(--white);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow);}
@@ -943,10 +943,10 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   <div class="screen" id="screen-categories">
     <div class="hero">
       <div class="hero-topbar" style="padding-top:max(env(safe-area-inset-top),8px)">
-        <div><div class="hero-greet">Spending</div><div style="font-family:var(--fd);font-size:22px;color:var(--white);font-weight:300">By <em style="color:var(--gold);font-style:italic">category</em></div></div>
+        <div><div class="hero-greet">Spending</div><div style="font-family:var(--fd);font-size:22px;color:var(--white);font-weight:300"><em style="color:var(--gold);font-style:italic">Category</em> breakdown</div></div>
         <button class="icon-btn" onclick="showScreen('home')">← Back</button>
       </div>
-      <div style="font-size:12px;color:var(--muted);margin-top:4px">Tap any category to set a budget</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.6);margin-top:4px">Tap any category to set a budget</div>
     </div>
     <div class="scroll-body" style="padding-top:10px">
       <div class="cat-grid" id="cat-grid"></div>
@@ -1056,10 +1056,10 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         <div class="rhs"><div class="rhs-lbl">Income</div><div class="rhs-val green" id="rpt-income">R 0</div></div>
         <div class="rhs"><div class="rhs-lbl">Expenses</div><div class="rhs-val coral" id="rpt-expenses">R 0</div></div>
         <div class="rhs"><div class="rhs-lbl">Saved</div><div class="rhs-val green" id="rpt-saved">R 0</div></div>
-        <div class="rhs"><div class="rhs-lbl">Save rate</div><div class="rhs-val" id="rpt-rate">0%</div></div>
+        <div class="rhs"><div class="rhs-lbl">Save rate</div><div class="rhs-val green" id="rpt-rate">0%</div></div>
       </div>
     </div>
-    <div class="scroll-body" style="padding-top:10px;padding-bottom:80px">
+    <div class="scroll-body" style="padding-top:8px;padding-bottom:calc(80px + env(safe-area-inset-bottom,0px))">
       <div class="report-section">
         <div class="report-section-title">Spending by category</div>
         <div id="rpt-cat-list"></div>
@@ -1659,7 +1659,8 @@ Respond ONLY with valid JSON:
     mic.classList.remove('processing');
     document.getElementById('mic-hint').textContent='Tap mic to check another purchase';
     showVoiceResult(p.verdict, p.headline, p.spoken_response, p.detail);
-    // Short answer only — no full readout
+    // Auto speak the short answer immediately
+    setTimeout(()=>speakText(p.spoken_response), 400);
     setTimeout(()=>{const ra=document.getElementById('voice-result-area');if(ra)ra.insertAdjacentHTML('beforeend','<p style="font-size:10px;color:#7A9E87;text-align:center;font-style:italic;margin-top:8px;padding:0 8px">Zest shows you your options — the decision is always yours. This is not financial advice.</p>');},400);
   } catch(err) {
     mic.classList.remove('processing');
@@ -1918,7 +1919,7 @@ function renderGoals(){
   const totalExp=S.expenses.reduce((s,e)=>s+(e.monthly_amount||0),0);
   const surplus=Math.max(0,S.income-totalExp);
   const perGoal=S.goals.length>0?surplus*(S.saveRate/100)/S.goals.length:0;
-  const R=34; const C=2*Math.PI*R;
+  const R=30; const C=2*Math.PI*R;
   el.innerHTML=S.goals.map(g=>{
     const pct=Math.min(100,Math.round((g.saved_amount/g.target_amount)*100));
     const rem=g.target_amount-g.saved_amount;
@@ -1929,9 +1930,9 @@ function renderGoals(){
     return`<div class="goal-ring-card">
       <div class="ring-cat">${cat}</div>
       <div class="ring-wrap">
-        <svg width="80" height="80" viewBox="0 0 80 80">
-          <circle class="ring-bg" cx="40" cy="40" r="${R}"/>
-          <circle class="ring-fill" cx="40" cy="40" r="${R}"
+        <svg width="72" height="72" viewBox="0 0 72 72">
+          <circle class="ring-bg" cx="36" cy="36" r="${R}"/>
+          <circle class="ring-fill" cx="36" cy="36" r="${R}"
             stroke="${colour}"
             stroke-dasharray="${C}"
             stroke-dashoffset="${offset}"
