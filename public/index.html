@@ -7,6 +7,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#1A2E22">
 <title>Zest — Your Money, Handled.</title>
+<meta name="zest-version" content="v2.6-colour-fix">
 <script>
 // Register service worker for push notifications
 if ('serviceWorker' in navigator && 'Notification' in window) {
@@ -503,7 +504,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         </label>
       </div>
       <button class="ob-cta" onclick="finishOnboarding()" style="margin-top:14px">Let Zest take it from here →</button>
-      <p style="font-size:10px;color:var(--muted);text-align:center;margin-top:10px;opacity:.7">By continuing, you acknowledge Zest is a budgeting tool, not a financial advisor. <span style="text-decoration:underline;cursor:pointer" onclick="showLegal('disclaimer')">View full disclaimer</span></p>
+      <p style="font-size:10px;color:var(--muted);text-align:center;margin-top:10px;opacity:.7">By continuing, you acknowledge Zest is a budgeting tool, not a financial advisor. <span style="opacity:0.3;font-size:9px">v2.6</span> <span style="text-decoration:underline;cursor:pointer" onclick="showLegal('disclaimer')">View full disclaimer</span></p>
     </div>
 
     <!-- HOME -->
@@ -581,33 +582,33 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         <div class="quick-grid">
           <div class="quick-card" onclick="showScreen('settings')">
             <div class="quick-icon">💰</div>
-            <div class="quick-label">Set income</div>
-            <div class="quick-sub">Update monthly pay</div>
+            <div class="quick-label" style="color:#1A2E22;font-weight:700">Set income</div>
+            <div class="quick-sub" style="color:#3D6B4F;font-weight:500">Update monthly pay</div>
           </div>
           <div class="quick-card" onclick="openAddExpense()">
             <div class="quick-icon">🛒</div>
-            <div class="quick-label">Add expense</div>
-            <div class="quick-sub">Log a purchase</div>
+            <div class="quick-label" style="color:#1A2E22;font-weight:700">Add expense</div>
+            <div class="quick-sub" style="color:#3D6B4F;font-weight:500">Log a purchase</div>
           </div>
           <div class="quick-card" onclick="showScreen('categories')">
             <div class="quick-icon">📊</div>
-            <div class="quick-label">Categories</div>
-            <div class="quick-sub">Spending by type</div>
+            <div class="quick-label" style="color:#1A2E22;font-weight:700">Categories</div>
+            <div class="quick-sub" style="color:#3D6B4F;font-weight:500">Spending by type</div>
           </div>
           <div class="quick-card" onclick="showScreen('spend')">
             <div class="quick-icon">🧾</div>
-            <div class="quick-label">Daily log</div>
-            <div class="quick-sub">Log today's spend</div>
+            <div class="quick-label" style="color:#1A2E22;font-weight:700">Daily log</div>
+            <div class="quick-sub" style="color:#3D6B4F;font-weight:500">Log today's spend</div>
           </div>
           <div class="quick-card" onclick="showScreen('report')">
             <div class="quick-icon">📅</div>
-            <div class="quick-label">Monthly report</div>
-            <div class="quick-sub">Your money summary</div>
+            <div class="quick-label" style="color:#1A2E22;font-weight:700">Monthly report</div>
+            <div class="quick-sub" style="color:#3D6B4F;font-weight:500">Your money summary</div>
           </div>
           <div class="quick-card" onclick="showScreen('goals')">
             <div class="quick-icon">🎯</div>
-            <div class="quick-label">My goals</div>
-            <div class="quick-sub">Savings progress</div>
+            <div class="quick-label" style="color:#1A2E22;font-weight:700">My goals</div>
+            <div class="quick-sub" style="color:#3D6B4F;font-weight:500">Savings progress</div>
           </div>
         </div>
 
@@ -685,7 +686,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       <div class="nav">
         <button class="nav-btn" onclick="showScreen('home',this)"><span class="ni">🏠</span>Home<div class="nav-dot"></div></button>
         <button class="nav-btn active" onclick="showScreen('nudges',this)"><span class="ni">⚡</span>Nudges<div class="nav-dot"></div></button>
-        <button class="nav-btn nav-btn-talk" onclick="showScreen('voice',this)"><span class="ni">🎤</span><span style="color:#D4A843;font-weight:700">Talk</span><div class="nav-dot"></div></button>
+        <button class="nav-btn nav-btn-talk" onclick="showScreen('voice',this)"><span class="ni">🎤</span><span style="color:#D4A843 !important;font-weight:800">Talk</span><div class="nav-dot"></div></button>
         <button class="nav-btn" onclick="showScreen('debt',this)"><span class="ni">🔓</span>Debt<div class="nav-dot"></div></button>
         <button class="nav-btn" onclick="showScreen('growth',this)"><span class="ni">🌱</span>Growth<div class="nav-dot"></div></button>
       </div>
@@ -706,7 +707,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       <div class="nav">
         <button class="nav-btn" onclick="showScreen('home',this)"><span class="ni">🏠</span>Home<div class="nav-dot"></div></button>
         <button class="nav-btn" onclick="showScreen('nudges',this)"><span class="ni">⚡</span>Nudges<div class="nav-dot"></div></button>
-        <button class="nav-btn active nav-btn-talk" style="color:#D4A843" onclick="showScreen('voice',this)"><span class="ni">🎤</span><span style="color:#D4A843;font-weight:700">Talk</span><div class="nav-dot"></div></button>
+        <button class="nav-btn active nav-btn-talk" style="color:#D4A843" onclick="showScreen('voice',this)"><span class="ni">🎤</span><span style="color:#D4A843 !important;font-weight:800">Talk</span><div class="nav-dot"></div></button>
         <button class="nav-btn" onclick="showScreen('debt',this)"><span class="ni">🔓</span>Debt<div class="nav-dot"></div></button>
         <button class="nav-btn" onclick="showScreen('growth',this)"><span class="ni">🌱</span>Growth<div class="nav-dot"></div></button>
       </div>
@@ -755,7 +756,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       <div class="nav">
         <button class="nav-btn" onclick="showScreen('home',this)"><span class="ni">🏠</span>Home<div class="nav-dot"></div></button>
         <button class="nav-btn" onclick="showScreen('nudges',this)"><span class="ni">⚡</span>Nudges<div class="nav-dot"></div></button>
-        <button class="nav-btn nav-btn-talk" onclick="showScreen('voice',this)"><span class="ni">🎤</span><span style="color:#D4A843;font-weight:700">Talk</span><div class="nav-dot"></div></button>
+        <button class="nav-btn nav-btn-talk" onclick="showScreen('voice',this)"><span class="ni">🎤</span><span style="color:#D4A843 !important;font-weight:800">Talk</span><div class="nav-dot"></div></button>
         <button class="nav-btn active" onclick="showScreen('debt',this)"><span class="ni">🔓</span>Debt<div class="nav-dot"></div></button>
         <button class="nav-btn" onclick="showScreen('growth',this)"><span class="ni">🌱</span>Growth<div class="nav-dot"></div></button>
       </div>
@@ -799,7 +800,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       <div class="nav">
         <button class="nav-btn" onclick="showScreen('home',this)"><span class="ni">🏠</span>Home<div class="nav-dot"></div></button>
         <button class="nav-btn" onclick="showScreen('nudges',this)"><span class="ni">⚡</span>Nudges<div class="nav-dot"></div></button>
-        <button class="nav-btn nav-btn-talk" onclick="showScreen('voice',this)"><span class="ni">🎤</span><span style="color:#D4A843;font-weight:700">Talk</span><div class="nav-dot"></div></button>
+        <button class="nav-btn nav-btn-talk" onclick="showScreen('voice',this)"><span class="ni">🎤</span><span style="color:#D4A843 !important;font-weight:800">Talk</span><div class="nav-dot"></div></button>
         <button class="nav-btn" onclick="showScreen('debt',this)"><span class="ni">🔓</span>Debt<div class="nav-dot"></div></button>
         <button class="nav-btn active" onclick="showScreen('growth',this)"><span class="ni">🌱</span>Growth<div class="nav-dot"></div></button>
       </div>
@@ -914,7 +915,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     <div class="nav">
       <button class="nav-btn" onclick="showScreen('home',this)"><span class="ni">🏠</span>Home<div class="nav-dot"></div></button>
       <button class="nav-btn" onclick="showScreen('nudges',this)"><span class="ni">⚡</span>Nudges<div class="nav-dot"></div></button>
-      <button class="nav-btn nav-btn-talk" onclick="showScreen('voice',this)"><span class="ni">🎤</span><span style="color:#D4A843;font-weight:700">Talk</span><div class="nav-dot"></div></button>
+      <button class="nav-btn nav-btn-talk" onclick="showScreen('voice',this)"><span class="ni">🎤</span><span style="color:#D4A843 !important;font-weight:800">Talk</span><div class="nav-dot"></div></button>
       <button class="nav-btn" onclick="showScreen('debt',this)"><span class="ni">🔓</span>Debt<div class="nav-dot"></div></button>
       <button class="nav-btn" onclick="showScreen('growth',this)"><span class="ni">🌱</span>Growth<div class="nav-dot"></div></button>
     </div>
@@ -934,7 +935,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     <div class="nav">
       <button class="nav-btn" onclick="showScreen('home',this)"><span class="ni">🏠</span>Home<div class="nav-dot"></div></button>
       <button class="nav-btn" onclick="showScreen('nudges',this)"><span class="ni">⚡</span>Nudges<div class="nav-dot"></div></button>
-      <button class="nav-btn nav-btn-talk" onclick="showScreen('voice',this)"><span class="ni">🎤</span><span style="color:#D4A843;font-weight:700">Talk</span><div class="nav-dot"></div></button>
+      <button class="nav-btn nav-btn-talk" onclick="showScreen('voice',this)"><span class="ni">🎤</span><span style="color:#D4A843 !important;font-weight:800">Talk</span><div class="nav-dot"></div></button>
       <button class="nav-btn" onclick="showScreen('debt',this)"><span class="ni">🔓</span>Debt<div class="nav-dot"></div></button>
       <button class="nav-btn" onclick="showScreen('growth',this)"><span class="ni">🌱</span>Growth<div class="nav-dot"></div></button>
     </div>
@@ -957,7 +958,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     <div class="nav">
       <button class="nav-btn" onclick="showScreen('home',this)"><span class="ni">🏠</span>Home<div class="nav-dot"></div></button>
       <button class="nav-btn" onclick="showScreen('nudges',this)"><span class="ni">⚡</span>Nudges<div class="nav-dot"></div></button>
-      <button class="nav-btn nav-btn-talk" onclick="showScreen('voice',this)"><span class="ni">🎤</span><span style="color:#D4A843;font-weight:700">Talk</span><div class="nav-dot"></div></button>
+      <button class="nav-btn nav-btn-talk" onclick="showScreen('voice',this)"><span class="ni">🎤</span><span style="color:#D4A843 !important;font-weight:800">Talk</span><div class="nav-dot"></div></button>
       <button class="nav-btn" onclick="showScreen('debt',this)"><span class="ni">🔓</span>Debt<div class="nav-dot"></div></button>
       <button class="nav-btn" onclick="showScreen('growth',this)"><span class="ni">🌱</span>Growth<div class="nav-dot"></div></button>
     </div>
@@ -1078,7 +1079,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     <div class="nav">
       <button class="nav-btn" onclick="showScreen('home',this)"><span class="ni">🏠</span>Home<div class="nav-dot"></div></button>
       <button class="nav-btn" onclick="showScreen('nudges',this)"><span class="ni">⚡</span>Nudges<div class="nav-dot"></div></button>
-      <button class="nav-btn nav-btn-talk" onclick="showScreen('voice',this)"><span class="ni">🎤</span><span style="color:#D4A843;font-weight:700">Talk</span><div class="nav-dot"></div></button>
+      <button class="nav-btn nav-btn-talk" onclick="showScreen('voice',this)"><span class="ni">🎤</span><span style="color:#D4A843 !important;font-weight:800">Talk</span><div class="nav-dot"></div></button>
       <button class="nav-btn" onclick="showScreen('debt',this)"><span class="ni">🔓</span>Debt<div class="nav-dot"></div></button>
       <button class="nav-btn" onclick="showScreen('growth',this)"><span class="ni">🌱</span>Growth<div class="nav-dot"></div></button>
     </div>
