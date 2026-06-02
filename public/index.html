@@ -89,7 +89,7 @@ html,body{height:100%;overflow:hidden;background:var(--dark-2);font-family:var(-
 /* ── HOME ── */
 .home-hero{background:var(--dark);padding:calc(env(safe-area-inset-top,20px) + 28px) 22px 26px;border-radius:0 0 36px 36px;flex-shrink:0;position:relative}
 .hero-topbar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
-.hero-greet{font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px}
+.hero-greet{font-size:10px;color:rgba(255,255,255,0.65);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px}
 .hero-name{font-family:var(--fd);font-size:24px;color:var(--white);font-weight:300}
 .hero-right{display:flex;align-items:center;gap:10px}
 .privacy-btn{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:6px 12px;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;font-family:var(--fb);transition:all .2s}
@@ -333,7 +333,7 @@ html,body{height:100%;overflow:hidden;background:var(--dark-2);font-family:var(-
 .section-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;font-weight:600}
 .settings-card{background:var(--white);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow);margin-bottom:12px}
 .hero-topbar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
-.hero-greet{font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px}
+.hero-greet{font-size:10px;color:rgba(255,255,255,0.65);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px}
 .icon-btn{background:rgba(0,0,0,0.08);border:1.5px solid rgba(0,0,0,0.15);border-radius:100px;padding:8px 18px;font-size:13px;font-weight:800;color:var(--dark);cursor:pointer;font-family:var(--fb);-webkit-tap-highlight-color:transparent;min-height:40px;display:inline-flex;align-items:center;gap:4px}
 /* ── GOALS ── */
 .goal-card{background:var(--white);border-radius:16px;padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow)}
@@ -507,7 +507,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     <!-- HOME -->
     <div class="screen" id="screen-home">
       <div class="home-hero">
-        <div class="hero-topbar">
+        <div class="hero-topbar" style="padding-top:max(env(safe-area-inset-top,0px),12px)">
           <div>
             <div class="hero-greet" id="hero-greet">Good morning</div>
             <div class="hero-name" id="hero-name">Welcome 👋</div>
@@ -845,7 +845,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   <div class="screen" id="screen-settings">
     <div class="hero">
       <div class="hero-topbar" style="padding-top:max(env(safe-area-inset-top),8px)">
-        <div><div class="hero-greet">Account</div><div style="font-family:var(--fd);font-size:22px;color:var(--white);font-weight:300">Settings</div></div>
+        <div><div class="hero-greet">Account</div><div style="font-family:var(--fd);font-size:22px;color:#ffffff;font-weight:400">Settings</div></div>
         <button class="icon-btn" onclick="showScreen('home')">← Back</button>
       </div>
     </div>
@@ -897,13 +897,13 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   <!-- GOALS SCREEN -->
   <div class="screen" id="screen-goals">
     <div class="hero">
-      <div class="hero-topbar">
-        <div><div class="hero-greet">Savings goals</div><div style="font-family:var(--fd);font-size:22px;color:var(--white);font-weight:300">Build your <em style="color:var(--gold);font-style:italic">future</em></div></div>
-        <button style="background:rgba(82,183,136,.15);border:1px solid rgba(82,183,136,.3);color:var(--green-light);font-family:var(--fb);font-size:12px;font-weight:600;padding:7px 14px;border-radius:100px;cursor:pointer" onclick="openAddGoal()">+ Add goal</button>
+      <div class="hero-topbar" style="padding-top:max(env(safe-area-inset-top),8px)">
+        <div><div class="hero-greet">Savings goals</div><div style="font-family:var(--fd);font-size:22px;color:#ffffff;font-weight:300">Build your <em style="color:var(--gold);font-style:italic">future</em></div></div>
+        <button style="background:rgba(82,183,136,.2);border:1px solid rgba(82,183,136,.4);color:#ffffff;font-family:var(--fb);font-size:12px;font-weight:700;padding:8px 14px;border-radius:100px;cursor:pointer" onclick="openAddGoal()">+ Add goal</button>
       </div>
       <div style="display:flex;gap:8px">
-        <div style="flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:10px 12px"><div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">Total saved</div><div style="font-family:var(--fd);font-size:17px;color:var(--green-light)" id="g-total-saved">R 0</div></div>
-        <div style="flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:10px 12px"><div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">To target</div><div style="font-family:var(--fd);font-size:17px;color:var(--white)" id="g-to-target">R 0</div></div>
+        <div style="flex:1;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:10px 12px"><div style="font-size:9px;color:rgba(255,255,255,.7);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">Total saved</div><div style="font-family:var(--fd);font-size:17px;color:var(--green-light)" id="g-total-saved">R 0</div></div>
+        <div style="flex:1;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:10px 12px"><div style="font-size:9px;color:rgba(255,255,255,.7);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">To target</div><div style="font-family:var(--fd);font-size:17px;color:rgba(255,255,255,.95)" id="g-to-target">R 0</div></div>
       </div>
     </div>
     <div class="scroll-body" style="padding-top:6px;padding-bottom:80px">
@@ -921,7 +921,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   <!-- TIMELINE SCREEN -->
   <div class="screen" id="screen-timeline">
     <div class="hero">
-      <div class="hero-topbar">
+      <div class="hero-topbar" style="padding-top:max(env(safe-area-inset-top,0px),12px)">
         <div><div class="hero-greet">Your journey</div><div style="font-family:var(--fd);font-size:22px;color:var(--white);font-weight:300">Green <em style="color:var(--green-light);font-style:italic">timeline</em></div></div>
       </div>
     </div>
@@ -1023,8 +1023,8 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         <button class="icon-btn" onclick="showScreen('home')">← Back</button>
       </div>
       <div style="display:flex;gap:8px">
-        <div style="flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:10px 12px"><div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">Spent today</div><div style="font-family:var(--fd);font-size:17px;color:var(--coral)" id="spend-today-total">R 0</div></div>
-        <div style="flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:10px 12px"><div style="font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">This week</div><div style="font-family:var(--fd);font-size:17px;color:var(--white)" id="spend-week-total">R 0</div></div>
+        <div style="flex:1;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:10px 12px"><div style="font-size:9px;color:rgba(255,255,255,.7);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">Spent today</div><div style="font-family:var(--fd);font-size:17px;color:var(--coral)" id="spend-today-total">R 0</div></div>
+        <div style="flex:1;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:10px 12px"><div style="font-size:9px;color:rgba(255,255,255,.7);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">This week</div><div style="font-family:var(--fd);font-size:17px;color:rgba(255,255,255,.95)" id="spend-week-total">R 0</div></div>
       </div>
     </div>
     <div class="scroll-body" style="padding-bottom:160px;min-height:0;flex:1" id="spend-log-list"></div>
@@ -1048,7 +1048,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
   <!-- MONTHLY REPORT SCREEN -->
   <div class="screen" id="screen-report">
     <div class="hero">
-      <div class="hero-topbar">
+      <div class="hero-topbar" style="padding-top:max(env(safe-area-inset-top,0px),12px)">
         <div><div class="hero-greet" id="report-month-lbl">This month</div><div style="font-family:var(--fd);font-size:22px;color:var(--white);font-weight:300"><em style="color:var(--gold);font-style:normal;font-family:var(--fd)">Money</em> <em style="color:var(--green-light);font-style:italic">report</em></div></div>
         <button class="icon-btn" onclick="showScreen('home')">← Back</button>
       </div>
@@ -2342,12 +2342,22 @@ function scheduleLocalNotifs() {
     const ms = target - now;
     const t = setTimeout(() => {
       if (Notification.permission === 'granted') {
-        new Notification(title, {
-          body,
-          icon: 'https://zest-za.netlify.app/favicon.ico',
-          tag: 'zest-' + hour,
-          renotify: true
-        });
+        try {
+          new Notification(title, {
+            body,
+            icon: 'https://zest-za.netlify.app/favicon.ico',
+            tag: 'zest-' + hour,
+            renotify: true,
+            requireInteraction: false
+          });
+        } catch(e) {
+          // Fallback: show in-app toast if notification fails
+          toast(body, 'info');
+        }
+      }
+      // Always show in-app toast when app is open
+      if (document.visibilityState === 'visible') {
+        toast('🔔 ' + body, 'info');
       }
       scheduleLocalNotifs(); // Reschedule for next day
     }, ms);
