@@ -89,7 +89,7 @@ html,body{height:100%;overflow:hidden;background:var(--dark-2);font-family:var(-
 /* ── HOME ── */
 .home-hero{background:var(--dark);padding:calc(env(safe-area-inset-top,20px) + 28px) 22px 26px;border-radius:0 0 36px 36px;flex-shrink:0;position:relative}
 .hero-topbar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:18px}
-.hero-greet{font-size:10px;color:rgba(255,255,255,0.65);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px}
+.hero-greet{font-size:10px;color:rgba(255,255,255,0.75);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;font-weight:600}
 .hero-name{font-family:var(--fd);font-size:24px;color:var(--white);font-weight:300}
 .hero-right{display:flex;align-items:center;gap:10px}
 .privacy-btn{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:6px 12px;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;font-family:var(--fb);transition:all .2s}
@@ -145,11 +145,11 @@ html,body{height:100%;overflow:hidden;background:var(--dark-2);font-family:var(-
 
 /* QUICK ACTIONS */
 .quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
-.quick-card{background:var(--white);border-radius:16px;padding:14px;box-shadow:var(--shadow);cursor:pointer;transition:all .2s;display:flex;flex-direction:column;gap:6px}
+.quick-card{background:#ffffff;border-radius:16px;padding:14px;box-shadow:0 2px 12px rgba(0,0,0,0.08);cursor:pointer;transition:all .2s;display:flex;flex-direction:column;gap:6px;border:1.5px solid rgba(26,46,34,0.08)}
 .quick-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
-.quick-icon{font-size:22px;margin-bottom:2px}
-.quick-label{font-size:13px;font-weight:600;color:var(--dark)}
-.quick-sub{font-size:11px;color:var(--muted)}
+.quick-icon{font-size:24px;margin-bottom:4px}
+.quick-label{font-size:13px;font-weight:700;color:#1A2E22}
+.quick-sub{font-size:11px;color:#3D6B4F;font-weight:500}
 
 /* TALK TO ZEST */
 .voice-card{background:var(--dark);border-radius:16px;padding:15px 16px;margin-bottom:12px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s}
@@ -312,6 +312,8 @@ html,body{height:100%;overflow:hidden;background:var(--dark-2);font-family:var(-
 .nav{display:flex;padding:8px 8px calc(env(safe-area-inset-bottom,10px) + 8px);background:var(--dark);border-top:1px solid rgba(255,255,255,0.06);flex-shrink:0}
 .nav-btn{flex:1;padding:7px 2px 4px;background:none;border:none;color:var(--muted);font-family:var(--fb);font-size:9px;font-weight:600;letter-spacing:.8px;cursor:pointer;border-radius:10px;display:flex;flex-direction:column;align-items:center;gap:2px;text-transform:uppercase;transition:all .2s}
 .nav-btn.active{color:var(--green-light)}
+.nav-btn-talk{color:#D4A843 !important;}
+.nav-btn-talk .ni{filter:saturate(2);}
 .ni{font-size:20px;line-height:1}
 .nav-dot{width:4px;height:4px;border-radius:100px;background:var(--green-light);opacity:0;transition:opacity .2s}
 .nav-btn.active .nav-dot{opacity:1}
@@ -333,7 +335,7 @@ html,body{height:100%;overflow:hidden;background:var(--dark-2);font-family:var(-
 .section-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;font-weight:600}
 .settings-card{background:var(--white);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow);margin-bottom:12px}
 .hero-topbar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
-.hero-greet{font-size:10px;color:rgba(255,255,255,0.65);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px}
+.hero-greet{font-size:10px;color:rgba(255,255,255,0.75);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;font-weight:600}
 .icon-btn{background:rgba(0,0,0,0.08);border:1.5px solid rgba(0,0,0,0.15);border-radius:100px;padding:8px 18px;font-size:13px;font-weight:800;color:var(--dark);cursor:pointer;font-family:var(--fb);-webkit-tap-highlight-color:transparent;min-height:40px;display:inline-flex;align-items:center;gap:4px}
 /* ── GOALS ── */
 .goal-card{background:var(--white);border-radius:16px;padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow)}
@@ -683,7 +685,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       <div class="nav">
         <button class="nav-btn" onclick="showScreen('home',this)"><span class="ni">🏠</span>Home<div class="nav-dot"></div></button>
         <button class="nav-btn active" onclick="showScreen('nudges',this)"><span class="ni">⚡</span>Nudges<div class="nav-dot"></div></button>
-        <button class="nav-btn" onclick="showScreen('voice',this)"><span class="ni">🎤</span>Talk<div class="nav-dot"></div></button>
+        <button class="nav-btn nav-btn-talk" onclick="showScreen('voice',this)"><span class="ni">🎤</span><span style="color:#D4A843;font-weight:700">Talk</span><div class="nav-dot"></div></button>
         <button class="nav-btn" onclick="showScreen('debt',this)"><span class="ni">🔓</span>Debt<div class="nav-dot"></div></button>
         <button class="nav-btn" onclick="showScreen('growth',this)"><span class="ni">🌱</span>Growth<div class="nav-dot"></div></button>
       </div>
@@ -704,7 +706,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       <div class="nav">
         <button class="nav-btn" onclick="showScreen('home',this)"><span class="ni">🏠</span>Home<div class="nav-dot"></div></button>
         <button class="nav-btn" onclick="showScreen('nudges',this)"><span class="ni">⚡</span>Nudges<div class="nav-dot"></div></button>
-        <button class="nav-btn active" onclick="showScreen('voice',this)"><span class="ni">🎤</span>Talk<div class="nav-dot"></div></button>
+        <button class="nav-btn active nav-btn-talk" style="color:#D4A843" onclick="showScreen('voice',this)"><span class="ni">🎤</span><span style="color:#D4A843;font-weight:700">Talk</span><div class="nav-dot"></div></button>
         <button class="nav-btn" onclick="showScreen('debt',this)"><span class="ni">🔓</span>Debt<div class="nav-dot"></div></button>
         <button class="nav-btn" onclick="showScreen('growth',this)"><span class="ni">🌱</span>Growth<div class="nav-dot"></div></button>
       </div>
@@ -753,7 +755,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       <div class="nav">
         <button class="nav-btn" onclick="showScreen('home',this)"><span class="ni">🏠</span>Home<div class="nav-dot"></div></button>
         <button class="nav-btn" onclick="showScreen('nudges',this)"><span class="ni">⚡</span>Nudges<div class="nav-dot"></div></button>
-        <button class="nav-btn" onclick="showScreen('voice',this)"><span class="ni">🎤</span>Talk<div class="nav-dot"></div></button>
+        <button class="nav-btn nav-btn-talk" onclick="showScreen('voice',this)"><span class="ni">🎤</span><span style="color:#D4A843;font-weight:700">Talk</span><div class="nav-dot"></div></button>
         <button class="nav-btn active" onclick="showScreen('debt',this)"><span class="ni">🔓</span>Debt<div class="nav-dot"></div></button>
         <button class="nav-btn" onclick="showScreen('growth',this)"><span class="ni">🌱</span>Growth<div class="nav-dot"></div></button>
       </div>
@@ -797,7 +799,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
       <div class="nav">
         <button class="nav-btn" onclick="showScreen('home',this)"><span class="ni">🏠</span>Home<div class="nav-dot"></div></button>
         <button class="nav-btn" onclick="showScreen('nudges',this)"><span class="ni">⚡</span>Nudges<div class="nav-dot"></div></button>
-        <button class="nav-btn" onclick="showScreen('voice',this)"><span class="ni">🎤</span>Talk<div class="nav-dot"></div></button>
+        <button class="nav-btn nav-btn-talk" onclick="showScreen('voice',this)"><span class="ni">🎤</span><span style="color:#D4A843;font-weight:700">Talk</span><div class="nav-dot"></div></button>
         <button class="nav-btn" onclick="showScreen('debt',this)"><span class="ni">🔓</span>Debt<div class="nav-dot"></div></button>
         <button class="nav-btn active" onclick="showScreen('growth',this)"><span class="ni">🌱</span>Growth<div class="nav-dot"></div></button>
       </div>
@@ -912,7 +914,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     <div class="nav">
       <button class="nav-btn" onclick="showScreen('home',this)"><span class="ni">🏠</span>Home<div class="nav-dot"></div></button>
       <button class="nav-btn" onclick="showScreen('nudges',this)"><span class="ni">⚡</span>Nudges<div class="nav-dot"></div></button>
-      <button class="nav-btn" onclick="showScreen('voice',this)"><span class="ni">🎤</span>Talk<div class="nav-dot"></div></button>
+      <button class="nav-btn nav-btn-talk" onclick="showScreen('voice',this)"><span class="ni">🎤</span><span style="color:#D4A843;font-weight:700">Talk</span><div class="nav-dot"></div></button>
       <button class="nav-btn" onclick="showScreen('debt',this)"><span class="ni">🔓</span>Debt<div class="nav-dot"></div></button>
       <button class="nav-btn" onclick="showScreen('growth',this)"><span class="ni">🌱</span>Growth<div class="nav-dot"></div></button>
     </div>
@@ -932,7 +934,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     <div class="nav">
       <button class="nav-btn" onclick="showScreen('home',this)"><span class="ni">🏠</span>Home<div class="nav-dot"></div></button>
       <button class="nav-btn" onclick="showScreen('nudges',this)"><span class="ni">⚡</span>Nudges<div class="nav-dot"></div></button>
-      <button class="nav-btn" onclick="showScreen('voice',this)"><span class="ni">🎤</span>Talk<div class="nav-dot"></div></button>
+      <button class="nav-btn nav-btn-talk" onclick="showScreen('voice',this)"><span class="ni">🎤</span><span style="color:#D4A843;font-weight:700">Talk</span><div class="nav-dot"></div></button>
       <button class="nav-btn" onclick="showScreen('debt',this)"><span class="ni">🔓</span>Debt<div class="nav-dot"></div></button>
       <button class="nav-btn" onclick="showScreen('growth',this)"><span class="ni">🌱</span>Growth<div class="nav-dot"></div></button>
     </div>
@@ -955,7 +957,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     <div class="nav">
       <button class="nav-btn" onclick="showScreen('home',this)"><span class="ni">🏠</span>Home<div class="nav-dot"></div></button>
       <button class="nav-btn" onclick="showScreen('nudges',this)"><span class="ni">⚡</span>Nudges<div class="nav-dot"></div></button>
-      <button class="nav-btn" onclick="showScreen('voice',this)"><span class="ni">🎤</span>Talk<div class="nav-dot"></div></button>
+      <button class="nav-btn nav-btn-talk" onclick="showScreen('voice',this)"><span class="ni">🎤</span><span style="color:#D4A843;font-weight:700">Talk</span><div class="nav-dot"></div></button>
       <button class="nav-btn" onclick="showScreen('debt',this)"><span class="ni">🔓</span>Debt<div class="nav-dot"></div></button>
       <button class="nav-btn" onclick="showScreen('growth',this)"><span class="ni">🌱</span>Growth<div class="nav-dot"></div></button>
     </div>
@@ -1076,7 +1078,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
     <div class="nav">
       <button class="nav-btn" onclick="showScreen('home',this)"><span class="ni">🏠</span>Home<div class="nav-dot"></div></button>
       <button class="nav-btn" onclick="showScreen('nudges',this)"><span class="ni">⚡</span>Nudges<div class="nav-dot"></div></button>
-      <button class="nav-btn" onclick="showScreen('voice',this)"><span class="ni">🎤</span>Talk<div class="nav-dot"></div></button>
+      <button class="nav-btn nav-btn-talk" onclick="showScreen('voice',this)"><span class="ni">🎤</span><span style="color:#D4A843;font-weight:700">Talk</span><div class="nav-dot"></div></button>
       <button class="nav-btn" onclick="showScreen('debt',this)"><span class="ni">🔓</span>Debt<div class="nav-dot"></div></button>
       <button class="nav-btn" onclick="showScreen('growth',this)"><span class="ni">🌱</span>Growth<div class="nav-dot"></div></button>
     </div>
