@@ -153,15 +153,15 @@ html,body{height:100%;overflow:hidden;background:var(--dark-2);font-family:var(-
 .quick-sub{font-size:11px;color:#3D6B4F;font-weight:500}
 
 /* TALK TO ZEST */
-.voice-card{background:var(--dark);border-radius:16px;padding:15px 16px;margin-bottom:12px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s}
-.voice-card:hover{background:var(--mid)}
-.voice-mic{width:42px;height:42px;background:rgba(82,183,136,0.15);border:1px solid rgba(82,183,136,0.28);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;transition:all .3s}
+.voice-card{background:linear-gradient(135deg,var(--gold-dark),var(--gold),var(--gold-light));border-radius:16px;padding:15px 16px;margin-bottom:12px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s;box-shadow:0 4px 20px rgba(212,168,67,0.3)}
+.voice-card:hover{background:linear-gradient(135deg,var(--gold),var(--gold-light));transform:translateY(-1px);box-shadow:0 6px 24px rgba(212,168,67,0.4)}
+.voice-mic{width:42px;height:42px;background:rgba(26,46,34,0.15);border:1px solid rgba(26,46,34,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;transition:all .3s}
 .voice-mic.listening{background:rgba(224,123,90,0.2);border-color:var(--coral);animation:vPulse 1s infinite}
 .voice-mic.processing{background:rgba(212,168,67,0.2);border-color:var(--gold)}
 @keyframes vPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
-.voice-title{font-size:13px;font-weight:600;color:var(--white)}
-.voice-sub{font-size:11px;color:var(--muted);margin-top:2px}
-.voice-arrow{color:var(--green-light);font-size:16px;margin-left:auto;flex-shrink:0}
+.voice-title{font-size:15px;font-weight:700;color:var(--dark)}
+.voice-sub{font-size:12px;color:rgba(26,46,34,0.7);margin-top:2px}
+.voice-arrow{color:var(--dark);font-size:18px;font-weight:700;margin-left:auto;flex-shrink:0}
 
 /* ── NUDGES ── */
 .nudge-hero{background:linear-gradient(160deg,var(--dark) 0%,#1e3d2a 100%);padding:calc(env(safe-area-inset-top,20px) + 28px) 22px 24px;border-radius:0 0 36px 36px;flex-shrink:0}
