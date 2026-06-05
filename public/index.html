@@ -196,6 +196,10 @@ html,body{height:100%;overflow:hidden;background:var(--dark-2);font-family:var(-
 .strat-tabs{display:flex;gap:6px;padding:12px 16px 4px;flex-shrink:0}
 .stab{flex:1;padding:8px 4px;border-radius:10px;border:1.5px solid transparent;background:var(--white);font-family:var(--fb);font-size:10px;font-weight:700;letter-spacing:.3px;cursor:pointer;color:var(--muted);text-align:center;transition:all .2s;box-shadow:var(--shadow)}
 .stab.active{background:var(--dark);color:var(--green-light);border-color:var(--green-light)}
+.strat-info{margin:6px 16px 0;background:var(--white);border-radius:14px;padding:12px 14px;box-shadow:var(--shadow);border-left:3px solid var(--green-light);transition:all .3s;}
+.strat-info-title{font-size:12px;font-weight:700;color:var(--dark);margin-bottom:4px;}
+.strat-info-body{font-size:11px;color:var(--mid);line-height:1.6;margin-bottom:6px;}
+.strat-info-zesty{font-size:11px;font-weight:700;color:var(--green);font-style:italic;}
 
 .extra-box{margin:8px 16px;background:linear-gradient(135deg,var(--green) 0%,#1a3d2a 100%);border-radius:14px;padding:12px 16px;display:flex;gap:10px;align-items:center}
 .extra-icon{font-size:18px;flex-shrink:0}
@@ -739,6 +743,12 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         <button class="stab active" id="stab-snowball" onclick="setStrategy('snowball',this)">⛄ Snowball</button>
         <button class="stab" id="stab-avalanche" onclick="setStrategy('avalanche',this)">🏔 Avalanche</button>
         <button class="stab" id="stab-smart" onclick="setStrategy('smart',this)">⚡ Zest Smart</button>
+      </div>
+
+      <div class="strat-info" id="strat-info-card">
+        <div class="strat-info-title" id="strat-info-title">⛄ Snowball</div>
+        <div class="strat-info-body" id="strat-info-body">Pay your smallest debt first. Each one you clear builds momentum — like a snowball rolling downhill. Great if quick wins keep you motivated.</div>
+        <div class="strat-info-zesty">Less stress. More zest. 🍋</div>
       </div>
 
       <div id="debt-lifestyle-alert" style="display:none;margin:8px 16px;background:rgba(224,123,90,0.08);border:1px solid rgba(224,123,90,0.25);border-radius:14px;padding:10px 14px;">
@@ -1430,10 +1440,35 @@ function setSmartNotif() {
 // ─── DEBTS ────────────────────────────────
 let debtStrategy = 'snowball';
 
+const STRAT_INFO = {
+  snowball: {
+    title: '⛄ Snowball',
+    body: 'Pay your smallest debt first. Each one you clear builds momentum — like a snowball rolling downhill. Great if quick wins keep you motivated and on track.',
+    border: 'var(--green-light)'
+  },
+  avalanche: {
+    title: '🏔 Avalanche',
+    body: 'Pay your highest interest debt first. This saves you the most money over time — mathematically the smartest approach. Best if you want to minimise what you pay overall.',
+    border: 'var(--coral)'
+  },
+  smart: {
+    title: '⚡ Zest Smart',
+    body: 'A blend of both — balances quick wins with interest savings. Zest weighs your specific debts and finds the sweet spot. Great all-rounder for your lifestyle.',
+    border: 'var(--gold)'
+  }
+};
+
 function setStrategy(s, btn) {
   debtStrategy = s;
   document.querySelectorAll('.stab').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+  // Update info card
+  const info = STRAT_INFO[s];
+  if (info) {
+    document.getElementById('strat-info-title').textContent = info.title;
+    document.getElementById('strat-info-body').textContent = info.body;
+    document.getElementById('strat-info-card').style.borderLeftColor = info.border;
+  }
   renderDebts();
 }
 
