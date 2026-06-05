@@ -2412,72 +2412,81 @@ function renderReport() {
 }
 
 
-// ─── LOCAL PUSH NOTIFICATIONS ────────────────────────────────
-async function requestNotifPermission() {
-  if (!('Notification' in window)) return false;
-  if (Notification.permission === 'granted') return true;
-  if (Notification.permission === 'denied') return false;
-  const perm = await Notification.requestPermission();
-  return perm === 'granted';
-}
+// ─── REAL PUSH NOTIFICATIONS ─────────────────────────────────
+const VAPID_PUBLIC_KEY =  + VAPID_PUBLIC + ;
 
-function scheduleLocalNotifs() {
-  if (!('Notification' in window)) return;
-  // Clear existing scheduled notifs
-  if (window._zestNotifTimers) window._zestNotifTimers.forEach(t => clearTimeout(t));
-  window._zestNotifTimers = [];
-
-  const now = new Date();
-  const schedule = [
-    { hour: 8,  min: 0,  title: 'Good morning! 🌿', body: "Start your day right — have you logged yesterday's purchases?" },
-    { hour: 13, min: 0,  title: 'Zest check-in ⚡',  body: 'Afternoon reminder — log any purchases you made this morning.' },
-    { hour: 20, min: 0,  title: 'Evening log 🧾',    body: "Take 30 seconds to log today's spending before you forget!" },
-  ];
-
-  schedule.forEach(({ hour, min, title, body }) => {
-    const target = new Date();
-    target.setHours(hour, min, 0, 0);
-    if (target <= now) target.setDate(target.getDate() + 1); // Schedule for tomorrow if passed
-    const ms = target - now;
-    const t = setTimeout(() => {
-      if (Notification.permission === 'granted') {
-        try {
-          new Notification(title, {
-            body,
-            icon: 'https://zest-za.netlify.app/favicon.ico',
-            tag: 'zest-' + hour,
-            renotify: true,
-            requireInteraction: false
-          });
-        } catch(e) {
-          // Fallback: show in-app toast if notification fails
-          toast(body, 'info');
-        }
-      }
-      // Always show in-app toast when app is open
-      if (document.visibilityState === 'visible') {
-        toast('🔔 ' + body, 'info');
-      }
-      scheduleLocalNotifs(); // Reschedule for next day
-    }, ms);
-    window._zestNotifTimers.push(t);
-  });
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) outputArray[i] = rawData.charCodeAt(i);
+  return outputArray;
 }
 
 async function enableNotifications() {
-  const granted = await requestNotifPermission();
-  if (granted) {
-    scheduleLocalNotifs();
-    toast('Reminders enabled! You will get 3 daily nudges 🔔', 'success');
-    localStorage.setItem('zest_notifs_enabled', '1');
-  } else {
-    toast('Enable notifications in your browser settings to get reminders', 'error');
+  // Check support
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    toast('Push notifications not supported on this browser', 'error');
+    return;
+  }
+
+  try {
+    // Request permission
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') {
+      toast('Please allow notifications to get daily reminders', 'error');
+      return;
+    }
+
+    // Get service worker registration
+    const reg = await navigator.serviceWorker.ready;
+
+    // Subscribe to push
+    const subscription = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+    });
+
+    // Save subscription to server
+    const res = await fetch('/.netlify/functions/save-subscription', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        subscription: subscription.toJSON(),
+        userId: S.user ? S.user.id : null
+      })
+    });
+
+    if (res.ok) {
+      localStorage.setItem('zest_notifs_enabled', '1');
+      toast('🔔 Daily reminders enabled! You will get 3 nudges a day', 'success');
+      // Send a test notification immediately
+      await fetch('/.netlify/functions/send-notification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          subscription: subscription.toJSON(),
+          title: 'Zest reminders are on! 🌿',
+          body: "You'll get nudges at 8am, 1pm and 8pm. Less stress. More zest! 🍋"
+        })
+      });
+    } else {
+      toast('Could not save reminders — try again', 'error');
+    }
+  } catch (err) {
+    console.error('Push subscription error:', err);
+    toast('Could not enable notifications — check browser settings', 'error');
   }
 }
 
-// Auto-start notifications if previously enabled
-if (localStorage.getItem('zest_notifs_enabled') === '1' && Notification.permission === 'granted') {
-  scheduleLocalNotifs();
+// Re-subscribe if previously enabled but subscription expired
+if (localStorage.getItem('zest_notifs_enabled') === '1') {
+  navigator.serviceWorker && navigator.serviceWorker.ready.then(reg => {
+    reg.pushManager.getSubscription().then(sub => {
+      if (!sub) localStorage.removeItem('zest_notifs_enabled');
+    });
+  });
 }
 
 
