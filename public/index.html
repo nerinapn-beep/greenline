@@ -1446,7 +1446,11 @@ function renderDebts() {
   const list = document.getElementById('debt-list');
   const totalDebt = S.debts.reduce((s,d) => s+d.current_balance, 0);
   const totalMin = S.debts.reduce((s,d) => s+d.minimum_payment, 0);
-  const surplus = Math.max(0, S.income - totalMin);
+  const totalExp = S.expenses.reduce((s,e) => s+(e.monthly_amount||0), 0);
+  // True surplus = income minus ALL expenses (not just debt minimums)
+  const trueSurplus = Math.max(0, S.income - totalExp);
+  // Extra available for debt = true surplus (after all expenses already paid)
+  const surplus = trueSurplus;
 
   document.getElementById('total-debt-val').textContent = fmt(totalDebt);
   document.getElementById('total-min-val').textContent = fmt(totalMin);
@@ -1472,7 +1476,7 @@ function renderDebts() {
     const withMin = calcMonths(top.current_balance, top.interest_rate, top.minimum_payment);
     const saved = (withMin!==Infinity && withExtra!==Infinity) ? withMin-withExtra : null;
     document.getElementById('extra-power-box').style.display='flex';
-    document.getElementById('extra-power-text').innerHTML = `<div class="extra-title">💪 Put ${fmt(surplus)}/mo extra towards ${top.name}</div><div class="extra-sub">${saved ? `Pay it off ${saved} months faster` : 'Apply your surplus to clear debt faster'}</div>`;
+    document.getElementById('extra-power-text').innerHTML = `<div class="extra-title">💪 Put ${fmt(trueSurplus)}/mo extra towards ${top.name}</div><div class="extra-sub">${saved ? `Pay it off ${saved} months faster` : 'Apply your surplus to clear debt faster'}</div>`;
   } else {
     document.getElementById('extra-power-box').style.display='none';
   }
@@ -2003,7 +2007,8 @@ function renderTimeline(){
   if(surplus<0){events.push({type:'warn',date:'Priority #1',event:'Eliminate monthly deficit',detail:`Cut ${fmt(Math.abs(surplus))} from monthly expenses to break even`});}
   else if(surplus>0){events.push({type:'next',date:'This month',event:`Saving ${fmt(surplus*(S.saveRate/100))}/month`,detail:`${S.saveRate}% savings rate`});}
   const sortedD=[...S.debts].sort((a,b)=>a.current_balance-b.current_balance);
-  const extraD=Math.max(0,surplus-S.debts.reduce((s,d)=>s+(d.minimum_payment||0),0));
+  const totalExpTL=S.expenses.reduce((s,e)=>s+(e.monthly_amount||0),0);
+  const extraD=Math.max(0,S.income-totalExpTL);
   sortedD.forEach(d=>{
     const pay=d.minimum_payment+((sortedD[0] && sortedD[0].id)===d.id?extraD:0);
     const r=d.interest_rate/100/12;let m;
