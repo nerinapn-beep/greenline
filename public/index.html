@@ -2123,14 +2123,7 @@ async function deleteAccount(){
   signOut();toast('Account deleted. Goodbye! 👋');
 }
 
-// ─── UPDATE showScreen TO HANDLE NEW SCREENS ──────────────────
-const _baseShow=showScreen;
-function showScreen(name,btn){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  const el=document.getElementById('screen-'+name);
-  if(el)el.classList.add('active');
-  if(btn){document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');}
-}
+// showScreen handled above
 
 // ─── HOME QUICK ACTION LINKS ──────────────────────────────────
 // Update quick action buttons 
