@@ -2438,31 +2438,25 @@ async function enableNotifications() {
       applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
     });
 
-    // Save subscription to server
+    // Send welcome notification AND save subscription in one call
     const res = await fetch('/.netlify/functions/save-subscription', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         subscription: subscription.toJSON(),
-        userId: S.user ? S.user.id : null
+        title: 'Zest reminders are on! 🌿',
+        body: "You will get nudges at 8am, 1pm and 8pm. Less stress. More zest! 🍋"
       })
     });
 
     if (res.ok) {
       localStorage.setItem('zest_notifs_enabled', '1');
+      localStorage.setItem('zest_push_sub', JSON.stringify(subscription.toJSON()));
       toast('🔔 Daily reminders enabled! You will get 3 nudges a day', 'success');
-      // Send a test notification immediately
-      await fetch('/.netlify/functions/send-notification', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          subscription: subscription.toJSON(),
-          title: 'Zest reminders are on! 🌿',
-          body: "You'll get nudges at 8am, 1pm and 8pm. Less stress. More zest! 🍋"
-        })
-      });
     } else {
-      toast('Could not save reminders — try again', 'error');
+      const errData = await res.json().catch(() => ({}));
+      console.error('Notification error:', errData);
+      toast('Could not enable reminders — try again', 'error');
     }
   } catch (err) {
     console.error('Push subscription error:', err);
