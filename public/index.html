@@ -741,6 +741,13 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
         <button class="stab" id="stab-smart" onclick="setStrategy('smart',this)">⚡ Zest Smart</button>
       </div>
 
+      <div id="debt-lifestyle-alert" style="display:none;margin:8px 16px;background:rgba(224,123,90,0.08);border:1px solid rgba(224,123,90,0.25);border-radius:14px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start">
+        <span style="font-size:18px;flex-shrink:0">💡</span>
+        <div>
+          <div style="font-size:12px;font-weight:700;color:#b83a2a;margin-bottom:3px">Heads up — your lifestyle budget is stretched</div>
+          <div id="debt-lifestyle-msg" style="font-size:11px;color:#7c3a2a;line-height:1.6"></div>
+        </div>
+      </div>
       <div class="extra-box" id="extra-power-box" style="display:none">
         <div class="extra-icon">💪</div>
         <div id="extra-power-text"><div class="extra-title">Extra payment power</div><div class="extra-sub">Loading...</div></div>
@@ -1470,6 +1477,17 @@ function renderDebts() {
   }).map((d,i) => ({...d, focused: i===0}));
 
   // Extra power
+  // Lifestyle alert — warn if minimums exceed surplus
+  const alertEl = document.getElementById('debt-lifestyle-alert');
+  const alertMsg = document.getElementById('debt-lifestyle-msg');
+  if (alertEl && totalMin > trueSurplus && S.debts.length > 0) {
+    const shortfall = totalMin - trueSurplus;
+    alertEl.style.display = 'flex';
+    alertMsg.textContent = `Your debt minimums (${fmt(totalMin)}/month) are more than your current surplus (${fmt(trueSurplus)}/month). To stay on top of things, you could look at trimming ${fmt(shortfall)} from your monthly lifestyle spend — small changes add up! Zest shows you the picture — a financial advisor can help you act on it.`;
+  } else if (alertEl) {
+    alertEl.style.display = 'none';
+  }
+
   if (surplus > 0 && sorted.length > 0) {
     const top = sorted[0];
     const withExtra = calcMonths(top.current_balance, top.interest_rate, top.minimum_payment + surplus);
