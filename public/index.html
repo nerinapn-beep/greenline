@@ -1363,13 +1363,27 @@ function finishOnboarding() {
 }
 
 // ─── NAVIGATION ───────────────────────────
-function showScreen(name) {
+function showScreen(name, btn) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   const el = document.getElementById('screen-' + name);
   if (el) el.classList.add('active');
+  if (btn) { document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
   if (name==='debt') renderDebts();
   if (name==='growth') renderGrowth();
   if (name==='home') renderHome();
+  if (name==='goals') renderGoals();
+  if (name==='timeline') renderTimeline();
+  if (name==='categories') renderCategories();
+  if (name==='spend') renderSpendLog();
+  if (name==='report') renderReport();
+  if (name==='settings') {
+    document.getElementById('set-name').value = S.profile.full_name||'';
+    document.getElementById('set-email').value = (S.user && S.user.email)||'';
+    document.getElementById('set-income').value = S.salary || S.income||'';
+    if(document.getElementById('set-other-income')) document.getElementById('set-other-income').value = S.otherIncome||'';
+    document.getElementById('set-rate').value = S.saveRate||20;
+    renderExpSettings();
+  }
 }
 
 // ─── RENDER ALL ───────────────────────────
@@ -1934,24 +1948,7 @@ function closeModal(id){document.getElementById(id).classList.remove('open');}
 function openAddGoal(){document.getElementById('add-goal-modal').classList.add('open');}
 function closeAddGoal(){document.getElementById('add-goal-modal').classList.remove('open');}
 
-// ─── SCREEN EXTENSIONS ────────────────────────────────────────
-const _origShowScreen = showScreen;
-showScreen = function(name, btn) {
-  _origShowScreen(name, btn);
-  if(name==='goals') renderGoals();
-  if(name==='timeline') renderTimeline();
-  if(name==='categories') renderCategories();
-  if(name==='spend') renderSpendLog();
-  if(name==='report') renderReport();
-  if(name==='settings'){
-    document.getElementById('set-name').value = S.profile.full_name||'';
-    document.getElementById('set-email').value = (S.user && S.user.email)||'';
-    document.getElementById('set-income').value = S.salary || S.income||'';
-    if(document.getElementById('set-other-income')) document.getElementById('set-other-income').value = S.otherIncome||'';
-    document.getElementById('set-rate').value = S.saveRate||20;
-    renderExpSettings();
-  }
-};
+// showScreen fully defined above — no override needed
 
 // ─── EXPENSES ─────────────────────────────────────────────────
 async function addExpense(){
