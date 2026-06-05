@@ -1358,13 +1358,13 @@ function setupUserDisplay() {
 
 function renderHome() {
   const totalDebt = S.debts.reduce((s,d) => s+d.current_balance, 0);
-  const totalMin = S.debts.reduce((s,d) => s+d.minimum_payment, 0);
-  const surplus = S.income - totalMin;
-  const pct = S.income>0 ? Math.min(100, Math.round((totalMin/S.income)*100)) : 0;
+  const totalExp = S.expenses.reduce((s,e) => s+(e.monthly_amount||0), 0);
+  const surplus = S.income - totalExp;
+  const pct = S.income>0 ? Math.min(100, Math.round((totalExp/S.income)*100)) : 0;
 
   document.getElementById('m-income').textContent = S.privacy ? '••••' : fmt(S.income);
-  document.getElementById('m-exp').textContent = S.privacy ? '••••' : fmt(totalMin);
-  document.getElementById('budget-amount').textContent = S.privacy ? '•••• / ••••' : `${fmt(totalMin)} / ${fmt(S.income)}`;
+  document.getElementById('m-exp').textContent = S.privacy ? '••••' : fmt(totalExp);
+  document.getElementById('budget-amount').textContent = S.privacy ? '•••• / ••••' : `${fmt(totalExp)} / ${fmt(S.income)}`;
   document.getElementById('bar-fill').style.width = pct + '%';
   document.getElementById('budget-sub').textContent = S.income > 0
     ? `${pct}% of income on expenses · ${fmt(Math.max(0,surplus))} surplus`
@@ -1375,8 +1375,8 @@ function renderHome() {
     document.getElementById('debt-teaser-sub').textContent = S.privacy ? '•••• remaining · Tap to see your plan' : `${fmt(totalDebt)} remaining · Tap to see your plan`;
   }
 
-  // Mood
-  const score = S.income>0 ? Math.min(100, Math.max(0, Math.round((surplus/S.income)*100+50))) : 30;
+  // Mood — based on actual surplus vs income
+  const score = S.income>0 ? Math.min(100, Math.max(0, Math.round((Math.max(0,surplus)/S.income)*100+50))) : 30;
   if (score >= 60) { document.getElementById('mood-icon').textContent='💚'; document.getElementById('mood-status').textContent="You're on track"; document.getElementById('mood-sub').textContent='Nothing to worry about today'; }
   else if (score >= 40) { document.getElementById('mood-icon').textContent='🟡'; document.getElementById('mood-status').textContent='Getting there'; document.getElementById('mood-sub').textContent='Small steps add up — keep going'; }
   else { document.getElementById('mood-icon').textContent='🔴'; document.getElementById('mood-status').textContent='Let\'s work on this'; document.getElementById('mood-sub').textContent='Zest has tips to help you improve'; }
@@ -1400,7 +1400,8 @@ function setSmartNotif() {
   let icon, type, title, sub;
   if (hr >= 5 && hr < 12) {
     icon='🌅'; type='morning'; title='Good morning! Ready to take control today?';
-    sub=`You have ${fmt(Math.max(0, S.income - S.debts.reduce((s,d)=>s+d.minimum_payment,0)))} available this month. Make it count!`;
+    const _totalExp = S.expenses.reduce((s,e)=>s+(e.monthly_amount||0),0);
+    sub=`You have ${fmt(Math.max(0, S.income - _totalExp))} available this month. Make it count!`;
   } else if (hr >= 12 && hr < 17) {
     icon='☀️'; type='afternoon'; title='Afternoon check-in — how\'s your spending?';
     sub='Remember to check before any big purchase. Tap Talk to ask Zest.';
@@ -1561,7 +1562,8 @@ async function deleteDebt(id) {
 
 // ─── GROWTH ───────────────────────────────
 function renderGrowth() {
-  const surplus = Math.max(0, S.income - S.debts.reduce((s,d)=>s+d.minimum_payment,0));
+  const totalExpGrowth = S.expenses.reduce((s,e)=>s+(e.monthly_amount||0),0);
+  const surplus = Math.max(0, S.income - totalExpGrowth);
   const totalDebt = S.debts.reduce((s,d)=>s+d.current_balance,0);
   const score = S.income>0 ? Math.min(100,Math.max(0,Math.round((surplus/S.income)*100+50))) : 30;
 
@@ -1631,7 +1633,8 @@ async function runVoiceCheck(transcript) {
   document.getElementById('mic-hint').textContent='Analysing your purchase...';
   document.getElementById('voice-result-area').innerHTML='<div class="voice-thinking"><div class="dots"><span></span><span></span><span></span></div>&nbsp;Zest is thinking...</div>';
 
-  const surplus = Math.max(0, S.income - S.debts.reduce((s,d)=>s+d.minimum_payment,0));
+  const totalExpGrowth = S.expenses.reduce((s,e)=>s+(e.monthly_amount||0),0);
+  const surplus = Math.max(0, S.income - totalExpGrowth);
   const totalDebt = S.debts.reduce((s,d)=>s+d.current_balance,0);
 
   const prompt = `You are Zest, a personal finance AI. Give a VERY short verdict on this purchase request.
