@@ -4,7 +4,6 @@
   "description": "Zest push notification functions",
   "dependencies": {
     "web-push": "^3.6.7",
-    "@supabase/supabase-js": "^2.39.3",
-    "@netlify/blobs": "^8.1.0"
+    "@supabase/supabase-js": "^2.39.3"
   }
 }
