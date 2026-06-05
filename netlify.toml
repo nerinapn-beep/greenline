@@ -1,22 +1,26 @@
 [build]
   publish = "public"
   functions = "netlify/functions"
- 
+
 [[headers]]
   for = "/*"
   [headers.values]
     X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
- 
+
 [[headers]]
   for = "/index.html"
   [headers.values]
     Cache-Control = "no-cache, no-store, must-revalidate"
     Pragma = "no-cache"
     Expires = "0"
- 
+
 [[headers]]
   for = "/sw.js"
   [headers.values]
     Cache-Control = "no-cache, no-store, must-revalidate"
- 
+
+# Send notifications 3x daily SAST (UTC+2)
+# 6am UTC = 8am SAST, 11am UTC = 1pm SAST, 6pm UTC = 8pm SAST
+[functions."schedule-notifications"]
+  schedule = "0 6,11,18 * * *"
