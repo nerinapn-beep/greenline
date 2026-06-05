@@ -1265,6 +1265,9 @@ function bootAuth() {
     const cache = JSON.parse(localStorage.getItem('zest_cache')||'{}');
     if (cache.profile) {
       Object.assign(S, cache);
+      if (cache.expenses) S.expenses = cache.expenses;
+      if (cache.goals) S.goals = cache.goals;
+      if (cache.debts) S.debts = cache.debts;
       document.getElementById('auth-screen').style.display='none';
       document.getElementById('app-screen').style.display='block';
       renderAll(); checkOnboarding();
@@ -1290,17 +1293,21 @@ sb.auth.onAuthStateChange(async (event, session) => {
 async function syncFromServer() {
   if (!S.user) return;
   const uid = S.user.id;
-  const [profRes, debtRes] = await Promise.all([
+  const [profRes, debtRes, expRes, goalRes] = await Promise.all([
     sb.from('profiles').select('*').eq('id', uid).single(),
-    sb.from('debts').select('*').eq('user_id', uid).eq('is_active', true).order('current_balance')
+    sb.from('debts').select('*').eq('user_id', uid).eq('is_active', true).order('current_balance'),
+    sb.from('expenses').select('*').eq('user_id', uid).order('created_at', {ascending: false}),
+    sb.from('goals').select('*').eq('user_id', uid)
   ]);
   if (profRes.data) { S.profile = profRes.data; S.income = profRes.data.monthly_income || 0; S.saveRate = profRes.data.save_rate || 20; }
   if (debtRes.data) S.debts = debtRes.data;
+  if (expRes.data) S.expenses = expRes.data;
+  if (goalRes.data) S.goals = goalRes.data;
   saveCache(); renderAll();
 }
 
 function saveCache() {
-  try { localStorage.setItem('zest_cache', JSON.stringify({ profile: S.profile, income: S.income, saveRate: S.saveRate, debts: S.debts })); } catch(e){}
+  try { localStorage.setItem('zest_cache', JSON.stringify({ profile: S.profile, income: S.income, saveRate: S.saveRate, debts: S.debts, expenses: S.expenses, goals: S.goals, salary: S.salary, otherIncome: S.otherIncome })); } catch(e){}
 }
 
 // ─── ONBOARDING ───────────────────────────
@@ -1486,8 +1493,8 @@ function renderDebts() {
       <div class="dc-prog-top"><span>${S.privacy?'••••':fmt(d.current_balance)} remaining</span><span style="color:${col}">${pct}% paid off</span></div>
       <div class="dc-prog-track"><div class="dc-prog-fill" style="width:${pct}%;background:linear-gradient(90deg,${col}88,${col})"></div></div>
       <div class="dc-stats">
-        <div class="dc-stat"><div class="dc-sv">${S.privacy?'••':fmt(d.minimum_payment)+'/mo'}</div><div class="dc-sl">Min payment</div></div>
-        <div class="dc-stat"><div class="dc-sv coral">${months===Infinity?'∞':months+' mo'}</div><div class="dc-sl">At min pay</div></div>
+        <div class="dc-stat"><div class="dc-sv">${S.privacy?'••':fmt(d.minimum_payment)+'/mo'}</div><div class="dc-sl">Min/month</div></div>
+        <div class="dc-stat"><div class="dc-sv coral">${months===Infinity?'∞':months+' months'}</div><div class="dc-sl">To pay off</div></div>
         <div class="dc-stat"><div class="dc-sv green">${intCost===Infinity?'∞':fmt(intCost)}</div><div class="dc-sl">Interest cost</div></div>
       </div>
       <div class="pay-row">
@@ -2181,12 +2188,21 @@ function addSpend() {
   const cat = document.getElementById('spend-cat').value;
   if (!desc || amt <= 0) { toast('Enter description and amount', 'error'); return; }
   const log = getSpendLog();
-  log.unshift({ id: 't'+Date.now(), date: todayStr(), desc, amt, cat });
+  const entry = { id: 't'+Date.now(), date: todayStr(), desc, amt, cat };
+  log.unshift(entry);
   saveSpendLog(log);
   document.getElementById('spend-desc').value = '';
   document.getElementById('spend-amt').value = '';
   renderSpendLog();
   toast('Logged ✓', 'success');
+  // Also save as expense to Supabase so it persists
+  if (S.user) {
+    sb.from('expenses').insert([{
+      user_id: S.user.id, name: desc, amount: amt,
+      monthly_amount: amt, category: cat, frequency: 'once',
+      is_recurring: false
+    }]).then(()=>{});
+  }
 }
 
 function delSpend(id) {
