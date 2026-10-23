@@ -400,6 +400,25 @@ html,body{height:100%;overflow:hidden;background:var(--dark-2);font-family:var(-
 
 /* ── NEW: STREAK BADGE ── */
 .streak-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(212,168,67,0.15);border:1px solid rgba(212,168,67,0.3);border-radius:100px;padding:5px 12px;font-size:12px;font-weight:700;color:var(--gold);margin-top:10px}
+/* ── DAILY NUDGE CARD ── */
+.daily-nudge-card{background:linear-gradient(135deg,rgba(45,106,79,0.12) 0%,rgba(82,183,136,0.08) 100%);border:1.5px solid rgba(82,183,136,0.25);border-radius:18px;padding:16px 18px;margin-bottom:12px;position:relative;overflow:hidden}
+.daily-nudge-card::before{content:'';position:absolute;top:-20px;right:-20px;width:80px;height:80px;background:radial-gradient(circle,rgba(82,183,136,0.15),transparent);border-radius:50%}
+.daily-nudge-top{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.daily-nudge-dot{width:8px;height:8px;border-radius:50%;background:var(--green-light);flex-shrink:0;animation:pulse-dot 2s ease-in-out infinite}
+@keyframes pulse-dot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+.daily-nudge-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--green-light)}
+.daily-nudge-msg{font-family:var(--fd);font-size:16px;font-style:italic;font-weight:300;color:var(--dark);line-height:1.5}
+.daily-nudge-sub{font-size:11px;color:var(--muted);margin-top:6px}
+/* ── WELLNESS CHECK-IN (elevated) ── */
+.wellness-card{background:var(--white);border-radius:18px;padding:16px 18px;margin-bottom:12px;box-shadow:var(--shadow);border:1px solid rgba(0,0,0,0.04)}
+.wellness-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.wellness-title{font-size:13px;font-weight:700;color:var(--dark)}
+.wellness-date{font-size:11px;color:var(--muted)}
+.wellness-btns{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.wellness-btn{border:1.5px solid rgba(0,0,0,0.08);background:var(--cream);border-radius:14px;padding:12px 6px;font-size:20px;cursor:pointer;text-align:center;transition:all .2s}
+.wellness-btn:hover,.wellness-btn.selected{background:var(--green-pale);border-color:var(--green-light);transform:scale(1.05)}
+.wellness-btn span{display:block;font-size:10px;margin-top:4px;color:var(--muted);font-weight:600}
+.wellness-done{text-align:center;padding:8px;font-size:13px;color:var(--green-light);font-weight:600}
 
 /* ── NEW: MOOD CHECK-IN ── */
 .mood-check-row{background:var(--white);border-radius:16px;padding:14px 16px;margin-bottom:12px;box-shadow:var(--shadow)}
@@ -528,8 +547,8 @@ html,body{height:100%;overflow:hidden;background:var(--dark-2);font-family:var(-
       <div class="home-hero">
         <div class="hero-topbar">
           <div>
-            <div class="hero-greet" id="hero-greet">Good morning</div>
-            <div class="hero-name" id="hero-name">Welcome 👋</div>
+            <div class="hero-greet" id="hero-greet">Good morning ☀️</div>
+            <div class="hero-name" id="hero-name" style="font-style:italic">Hey there 👋</div>
             <div id="streak-badge-wrap"></div>
           </div>
           <div class="hero-right">
@@ -561,6 +580,32 @@ html,body{height:100%;overflow:hidden;background:var(--dark-2);font-family:var(-
       <div id="notif-area"></div>
 
       <div class="home-body" id="home-body">
+
+        <!-- DAILY NUDGE CARD -->
+        <div class="daily-nudge-card" id="daily-nudge-card">
+          <div class="daily-nudge-top">
+            <div class="daily-nudge-dot"></div>
+            <div class="daily-nudge-label">✨ Today's gentle nudge</div>
+          </div>
+          <div class="daily-nudge-msg" id="daily-nudge-msg">Loading your nudge…</div>
+          <div class="daily-nudge-sub" id="daily-nudge-sub"></div>
+        </div>
+
+        <!-- WELLNESS CHECK-IN -->
+        <div class="wellness-card" id="wellness-card">
+          <div class="wellness-top">
+            <div class="wellness-title">💚 How are you feeling about money today?</div>
+            <div class="wellness-date" id="wellness-date"></div>
+          </div>
+          <div class="wellness-btns" id="wellness-btns">
+            <button class="wellness-btn" onclick="saveWellness('amazing',this)">🤩<span>Amazing</span></button>
+            <button class="wellness-btn" onclick="saveWellness('good',this)">😊<span>Good</span></button>
+            <button class="wellness-btn" onclick="saveWellness('okay',this)">😐<span>Okay</span></button>
+            <button class="wellness-btn" onclick="saveWellness('stressed',this)">😟<span>Stressed</span></button>
+          </div>
+          <div class="wellness-done" id="wellness-done" style="display:none"></div>
+        </div>
+
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
           <div class="sec-lbl" style="margin-bottom:0">This month</div>
         </div>
@@ -585,16 +630,6 @@ html,body{height:100%;overflow:hidden;background:var(--dark-2);font-family:var(-
           </div>
           <div class="bar-track"><div class="bar-fill" id="bar-fill" style="width:0%"></div></div>
           <div class="budget-sub" id="budget-sub">Set your income to get started</div>
-        </div>
-
-        <!-- MOOD CHECK-IN (new) -->
-        <div class="mood-check-row" id="mood-check-row">
-          <div class="mood-check-q">How are you feeling about money today? 💚</div>
-          <div class="mood-check-btns">
-            <button class="mood-check-btn" onclick="saveMood('good',this)">😊<span>Good</span></button>
-            <button class="mood-check-btn" onclick="saveMood('okay',this)">😐<span>Okay</span></button>
-            <button class="mood-check-btn" onclick="saveMood('stressed',this)">😟<span>Stressed</span></button>
-          </div>
         </div>
 
         <div class="debt-teaser" onclick="showScreen('debt')" id="debt-teaser">
@@ -1291,6 +1326,7 @@ function renderAll() {
   renderHome();
   setSmartNotif();
   checkStreak();
+  loadDailyNudge();
   loadMoodCheckIn();
   generateZestMessages(); // keeps badge up to date
 }
@@ -1301,7 +1337,7 @@ function setupUserDisplay() {
   const initials = name.split(' ').map(p=>p[0]).join('').toUpperCase().slice(0,2);
   const ai = $('avatar-initials'); if (ai) ai.textContent = initials;
   const mn = $('menu-name'); if (mn) mn.textContent = name;
-  const hn = $('hero-name'); if (hn) hn.textContent = 'Hey, ' + name.split(' ')[0] + ' 👋';
+  const hn = $('hero-name'); if (hn) { hn.textContent = 'Hey, ' + name.split(' ')[0] + ' 👋'; hn.style.fontStyle = 'italic'; }
   const h = new Date().getHours();
   const greet = h < 12 ? 'Good morning ☀️' : h < 17 ? 'Good afternoon 🌤' : 'Good evening 🌙';
   const hg = $('hero-greet'); if (hg) hg.textContent = greet;
@@ -1414,7 +1450,7 @@ function setSmartNotif() {
 // ── STREAK ──
 function checkStreak() {
   const today = new Date().toDateString();
-  let streak = 0;
+  let streak = 1;
   try {
     const raw = JSON.parse(localStorage.getItem('zest_streak') || '{}');
     const last = raw.lastDate;
@@ -1425,35 +1461,82 @@ function checkStreak() {
   } catch(e) { streak = 1; }
   const sw = $('streak-badge-wrap');
   if (sw) {
-    if (streak >= 2) sw.innerHTML = `<div class="streak-badge">🔥 ${streak}-day streak</div>`;
-    else sw.innerHTML = '';
+    const label = streak === 1 ? '🌱 Day 1 streak' : streak < 7 ? `🔥 ${streak}-day streak` : `🏆 ${streak}-day streak`;
+    sw.innerHTML = `<div class="streak-badge">${label}</div>`;
   }
   const sg = $('streak-in-growth');
-  if (sg) sg.textContent = streak >= 2 ? `🔥 ${streak}-day streak — keep going!` : 'Check in daily to build your streak 🔥';
+  if (sg) sg.textContent = streak <= 1 ? '🌱 Day 1 — your journey starts today!' : streak < 7 ? `🔥 ${streak}-day streak — keep going!` : `🏆 ${streak}-day streak — you\'re on fire!`;
   return streak;
 }
 
-// ── MOOD CHECK-IN ──
+// ── DAILY NUDGE ──
+const DAILY_NUDGES = [
+  { msg: 'Small changes today create a very different tomorrow.', sub: 'One good money decision at a time.' },
+  { msg: 'You don\'t have to be perfect — just a little better than yesterday.', sub: 'Progress beats perfection every time.' },
+  { msg: 'The best investment you can make is in yourself and your future.', sub: 'Every rand saved is a vote for the life you want.' },
+  { msg: 'Financial freedom isn\'t about having everything — it\'s about not worrying about everything.', sub: 'You\'re building that peace, right now.' },
+  { msg: 'Money is a tool. Today, use it wisely.', sub: 'One intentional choice makes all the difference.' },
+  { msg: 'Every time you track a spend, you take back control.', sub: 'Awareness is the first step to freedom.' },
+  { msg: 'Debt is temporary. Freedom is forever.', sub: 'Keep going — you\'re closer than you think.' },
+  { msg: 'Your future self will thank you for the choices you make today.', sub: 'Be the person your future self needs.' },
+  { msg: 'Budgeting isn\'t restricting your life — it\'s designing it.', sub: 'You\'re the architect of your own financial future.' },
+  { msg: 'A goal without a plan is just a wish. You have a plan.', sub: 'ZEST is here every step of the way.' },
+  { msg: 'You\'ve got this. One day, one decision at a time.', sub: 'Consistency is your superpower.' },
+  { msg: 'The secret to getting ahead is getting started. You already did.', sub: 'Keep the momentum going today.' },
+  { msg: 'Saving a little today means freedom a lot sooner.', sub: 'Every rand adds up faster than you think.' },
+  { msg: 'Stress less. Plan more. Live fully.', sub: 'That\'s the ZEST way.' }
+];
+function loadDailyNudge() {
+  const nm = $('daily-nudge-msg'); const ns = $('daily-nudge-sub');
+  if (!nm) return;
+  // pick nudge by day-of-year so it changes daily but is consistent during the day
+  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(),0,0)) / 86400000);
+  const nudge = DAILY_NUDGES[dayOfYear % DAILY_NUDGES.length];
+  nm.textContent = nudge.msg;
+  if (ns) ns.textContent = nudge.sub;
+}
+
+// ── WELLNESS CHECK-IN ──
 function loadMoodCheckIn() {
+  loadWellnessCheckIn();
+}
+function loadWellnessCheckIn() {
   try {
     const today = new Date().toDateString();
+    const wd = $('wellness-date');
+    if (wd) wd.textContent = new Date().toLocaleDateString('en-ZA', {weekday:'short', day:'numeric', month:'short'});
     const raw = JSON.parse(localStorage.getItem('zest_mood') || '{}');
     if (raw.date === today && raw.mood) {
-      const map = {good:'😊',okay:'😐',stressed:'😟'};
-      document.querySelectorAll('.mood-check-btn').forEach(b => b.classList.remove('selected'));
-      const target = document.querySelector(`.mood-check-btn[onclick*="'${raw.mood}'"]`);
-      if (target) target.classList.add('selected');
+      showWellnessDone(raw.mood);
+    } else {
+      const wb = $('wellness-btns'); const wdone = $('wellness-done');
+      if (wb) wb.style.display = 'grid';
+      if (wdone) wdone.style.display = 'none';
     }
   } catch(e){}
 }
-function saveMood(mood, btn) {
+function saveWellness(mood, btn) {
   const today = new Date().toDateString();
   localStorage.setItem('zest_mood', JSON.stringify({date:today, mood}));
-  document.querySelectorAll('.mood-check-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  const msgs = {good:'Glad to hear it! 💚 Keep it up.', okay:'That\'s okay — Zest is here to help.', stressed:'It\'ll be okay 💚 Let\'s look at your numbers together.'};
+  showWellnessDone(mood);
+  const msgs = {amazing:'You\'re glowing! 🤩 Keep that energy!', good:'That\'s great! 💚 ZEST is proud of you.', okay:'That\'s okay — every day is different. 😊', stressed:'It\'ll be okay 💚 Let\'s look at your numbers together.'};
   toast(msgs[mood] || 'Logged 💚');
 }
+function showWellnessDone(mood) {
+  const wb = $('wellness-btns'); const wdone = $('wellness-done');
+  if (!wb || !wdone) return;
+  const icons = {amazing:'🤩',good:'😊',okay:'😐',stressed:'😟'};
+  const labels = {amazing:'Amazing',good:'Good',okay:'Okay',stressed:'Stressed'};
+  wdone.innerHTML = `${icons[mood]||'💚'} You\'re feeling <strong>${labels[mood]||mood}</strong> today — logged!
+    <button onclick="resetWellness()" style="display:block;margin:6px auto 0;font-size:10px;color:var(--muted);background:none;border:none;cursor:pointer;text-decoration:underline">Change my answer</button>`;
+  wb.style.display = 'none';
+  wdone.style.display = 'block';
+}
+function resetWellness() {
+  localStorage.removeItem('zest_mood');
+  loadWellnessCheckIn();
+}
+function saveMood(mood, btn) { saveWellness(mood, btn); }
 
 // ── CHALLENGES ──
 const CHALLENGES_DEF = [
@@ -2121,7 +2204,7 @@ async function saveProfile() {
   S.profile.full_name = name;
   const ai = $('avatar-initials'); if (ai) ai.textContent = name.split(' ').map(p=>p[0]).join('').toUpperCase().slice(0,2);
   const mn = $('menu-name'); if (mn) mn.textContent = name;
-  const hn = $('hero-name'); if (hn) hn.textContent = 'Hey, ' + name.split(' ')[0] + ' 👋';
+  const hn = $('hero-name'); if (hn) { hn.textContent = 'Hey, ' + name.split(' ')[0] + ' 👋'; hn.style.fontStyle = 'italic'; }
   if (S.user) await sb.from('profiles').upsert({id: S.user.id, full_name: name, monthly_income: S.income, save_rate: S.saveRate});
   saveCache(); toast('Profile saved 💚', 'success');
 }
