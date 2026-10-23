@@ -157,6 +157,46 @@ html,body{height:100%;overflow:hidden;background:var(--dark-2);font-family:var(-
 .blurred .stat-val,.blurred .bar-amount,.blurred .debt-sub-text{filter:blur(7px);user-select:none}
 
 .budget-card{background:var(--white);border-radius:16px;padding:15px 16px;margin-bottom:12px;box-shadow:var(--shadow)}
+/* ── FINANCE SCORE RING ── */
+.score-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.score-card{background:var(--white);border-radius:18px;padding:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;gap:8px}
+.score-card-left{align-items:flex-start}
+.score-ring-wrap{position:relative;width:80px;height:80px;flex-shrink:0}
+.score-ring-wrap svg{transform:rotate(-90deg)}
+.score-ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.score-ring-pct{font-size:18px;font-weight:800;color:var(--dark)}
+.score-ring-lbl{font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+.score-label{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.score-value{font-family:var(--fd);font-size:20px;font-weight:300;color:var(--dark)}
+.score-quality{font-size:12px;font-weight:700;color:var(--green-light)}
+.score-sub{font-size:10px;color:var(--muted)}
+/* ── DARK SPENDING CARD ── */
+.spending-dark-card{background:linear-gradient(145deg,var(--dark) 0%,#1e3d2a 100%);border-radius:20px;padding:18px 18px 14px;margin-bottom:12px;position:relative;overflow:hidden}
+.spending-dark-card::after{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;background:radial-gradient(circle,rgba(82,183,136,0.15),transparent);border-radius:50%}
+.sdc-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:4px}
+.sdc-amount{font-family:var(--fd);font-size:28px;font-weight:300;color:var(--white);margin-bottom:4px}
+.sdc-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(82,183,136,0.2);border:1px solid rgba(82,183,136,0.3);border-radius:100px;padding:3px 10px;font-size:11px;font-weight:700;color:var(--green-light);margin-bottom:14px}
+.sdc-badge.over{background:rgba(224,123,90,0.2);border-color:rgba(224,123,90,0.3);color:var(--coral)}
+.sdc-bars{display:flex;align-items:flex-end;gap:5px;height:52px}
+.sdc-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.sdc-bar{width:100%;border-radius:4px 4px 0 0;background:rgba(255,255,255,0.12);transition:height .4s ease;min-height:4px}
+.sdc-bar.current{background:var(--green-light)}
+.sdc-bar-day{font-size:8px;color:rgba(255,255,255,0.35);font-weight:600}
+/* ── SAVINGS GOAL RING ── */
+.goal-ring-card{background:var(--white);border-radius:18px;padding:16px 18px;margin-bottom:12px;box-shadow:var(--shadow)}
+.goal-ring-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.goal-ring-title{font-size:12px;font-weight:700;letter-spacing:.5px;color:var(--dark)}
+.goal-ring-see{font-size:11px;color:var(--green-light);cursor:pointer;font-weight:600}
+.goal-ring-body{display:flex;align-items:center;gap:16px}
+.goal-ring-svg{position:relative;width:72px;height:72px;flex-shrink:0}
+.goal-ring-svg svg{transform:rotate(-90deg)}
+.goal-ring-pct-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:var(--dark)}
+.goal-ring-info{flex:1}
+.goal-ring-name{font-size:13px;font-weight:700;color:var(--dark);margin-bottom:2px}
+.goal-ring-amount{font-family:var(--fd);font-size:22px;font-weight:300;color:var(--dark)}
+.goal-ring-of{font-size:11px;color:var(--muted)}
+.goal-ring-add{display:inline-flex;align-items:center;gap:6px;background:var(--green-pale);border:none;border-radius:100px;padding:7px 14px;font-size:12px;font-weight:700;color:var(--green);cursor:pointer;margin-top:8px;font-family:var(--fb)}
+.goal-ring-empty{font-size:12px;color:var(--muted);text-align:center;padding:8px 0}
 .budget-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .budget-label{font-size:13px;font-weight:600;color:var(--dark)}
 .budget-amount{font-size:13px;color:var(--mid);font-weight:500}
@@ -576,8 +616,6 @@ html,body{height:100%;overflow:hidden;background:var(--dark-2);font-family:var(-
           </div>
         </div>
       </div>
-
-      <div id="notif-area"></div>
 
       <div class="home-body" id="home-body">
 
@@ -1324,7 +1362,6 @@ function showScreen(name, btn) {
 function renderAll() {
   setupUserDisplay();
   renderHome();
-  setSmartNotif();
   checkStreak();
   loadDailyNudge();
   loadMoodCheckIn();
@@ -1380,9 +1417,7 @@ function renderHome() {
     const totalDebt = S.debts.reduce((a,d) => a + (d.current_balance||0), 0);
     const dt = $('debt-teaser-sub'); if (dt) dt.textContent = fmt(totalDebt) + ' across ' + S.debts.length + ' debt' + (S.debts.length>1?'s':'');
   }
-  // expenses in settings
   renderExpenseList();
-  // privacy
   document.querySelectorAll('.app').forEach(a => a.classList.toggle('blurred', S.privacy));
 }
 
@@ -1977,12 +2012,63 @@ function renderGrowth() {
 // ── GOALS ──
 function renderGoals() {
   const list = $('goals-list'); if (!list) return;
-  if (!S.goals.length) { list.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--muted)"><div style="font-size:36px;margin-bottom:10px">🎯</div><div style="font-size:14px;font-weight:600;color:var(--mid);margin-bottom:4px">No goals yet</div><div style="font-size:12px">Tap "+ Add goal" to set your first savings target</div></div>'; return; }
+  const totalExp = S.expenses.reduce((a,e) => a + (e.monthly_amount||e.amount||0), 0);
+  const surplus = S.income - totalExp;
+  const today = new Date().getDay();
+  const todayIdx = today === 0 ? 6 : today - 1;
+  const days = ['M','T','W','T','F','S','S'];
+  const weights = [0.12,0.10,0.15,0.18,0.20,0.14,0.11];
+  const maxH = 44;
+  const barsHTML = days.map((d,i) => {
+    const h = Math.max(6, Math.round(weights[i] * maxH * (totalExp > 0 ? 1 : 0.3)));
+    return `<div class="sdc-bar-wrap"><div class="sdc-bar${i===todayIdx?' current':''}" style="height:${h}px"></div><div class="sdc-bar-day">${d}</div></div>`;
+  }).join('');
+  const badgeText = S.income === 0 ? 'Set your income' : surplus >= 0 ? '↓ ' + fmt(surplus) + ' under budget' : '↑ ' + fmt(Math.abs(surplus)) + ' over';
+  const badgeCls = surplus < 0 && S.income > 0 ? 'sdc-badge over' : 'sdc-badge';
+
+  // spending dark card
+  const spendCard = `<div class="spending-dark-card" style="margin-bottom:12px">
+    <div class="sdc-label">This Month's Spending</div>
+    <div class="sdc-amount">${fmt(totalExp)}</div>
+    <div class="${badgeCls}">${badgeText}</div>
+    <div class="sdc-bars" style="margin-top:12px">${barsHTML}</div>
+  </div>`;
+
+  // goal ring — top active goal
+  if (!S.goals.length) {
+    list.innerHTML = spendCard + '<div style="text-align:center;padding:40px 20px;color:var(--muted)"><div style="font-size:36px;margin-bottom:10px">🎯</div><div style="font-size:14px;font-weight:600;color:var(--mid);margin-bottom:4px">No goals yet</div><div style="font-size:12px">Tap "+ Add goal" to set your first savings target</div></div>';
+    return;
+  }
   const totalSaved = S.goals.reduce((a,g) => a + (g.current_amount||0), 0);
   const totalTarget = S.goals.reduce((a,g) => a + (g.target_amount||0), 0);
   const gs = $('g-total-saved'); if (gs) gs.textContent = fmt(totalSaved);
   const gt = $('g-to-target'); if (gt) gt.textContent = fmt(Math.max(0, totalTarget - totalSaved));
-  list.innerHTML = S.goals.map((g,i) => {
+
+  const activeGoal = S.goals.find(g => (g.current_amount||0) < (g.target_amount||1));
+  let goalRingHTML = '';
+  if (activeGoal) {
+    const pct = Math.min(100, Math.round(((activeGoal.current_amount||0)/(activeGoal.target_amount||1))*100));
+    goalRingHTML = `<div class="goal-ring-card" style="margin-bottom:12px">
+      <div class="goal-ring-top"><div class="goal-ring-title">🎯 Top Savings Goal</div><div class="goal-ring-see" onclick="void(0)">This month</div></div>
+      <div style="display:flex;align-items:center;gap:16px">
+        <div class="goal-ring-svg">
+          <svg width="72" height="72" viewBox="0 0 72 72">
+            <circle cx="36" cy="36" r="28" fill="none" stroke="#E8F5E9" stroke-width="7"/>
+            <circle cx="36" cy="36" r="28" fill="none" stroke="var(--green-light)" stroke-width="7" stroke-linecap="round"
+              stroke-dasharray="176" stroke-dashoffset="${176-(176*pct/100)}" style="transform:rotate(-90deg);transform-origin:center"/>
+          </svg>
+          <div class="goal-ring-pct-text">${pct}%</div>
+        </div>
+        <div class="goal-ring-info">
+          <div class="goal-ring-name">${activeGoal.name}</div>
+          <div class="goal-ring-amount">${fmt(activeGoal.current_amount||0)}</div>
+          <div class="goal-ring-of">of ${fmt(activeGoal.target_amount||0)}</div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  const goalsListHTML = S.goals.map((g,i) => {
     const pct = g.target_amount > 0 ? Math.min(100, Math.round((g.current_amount||0) / g.target_amount * 100)) : 0;
     return `<div class="goal-card">
       <div class="gc-top"><div class="gc-name">${g.category||'🎯'} ${g.name}</div><div class="gc-pct">${pct}%</div></div>
@@ -1995,6 +2081,8 @@ function renderGoals() {
       </div>
     </div>`;
   }).join('');
+
+  list.innerHTML = spendCard + goalRingHTML + goalsListHTML;
 }
 async function contributeGoal(i) {
   const inp = $('gc-inp-'+i); if (!inp) return;
