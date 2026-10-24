@@ -1517,6 +1517,7 @@ function showScreen(name, btn) {
   if (name === 'debt') renderDebt();
   if (name === 'growth') { renderGrowth(); renderBadges(); }
   if (name === 'nudges') renderChallenges();
+  if (name === 'paywall') showPaywall();
   if (name === 'notif-settings') loadNotifSettings();
   if (name === 'voice') initChatIfNeeded();
   if (name === 'inbox') renderInbox();
@@ -2703,13 +2704,6 @@ function showPaywall() {
   // Highlight current plan if any
   const plan = getActivePlan();
   if (plan) selectPlan(plan);
-}
-
-// Wire paywall into showScreen
-const _origShowScreen = showScreen;
-function showScreen(name, btn) {
-  if (name === 'paywall') showPaywall();
-  _origShowScreen(name, btn);
 }
 
 sb.auth.onAuthStateChange(async (event, session) => {
