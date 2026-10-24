@@ -1707,7 +1707,23 @@ const DAILY_NUDGES = [
   { msg: 'You\'ve got this. One day, one decision at a time.', sub: 'Consistency is your superpower.' },
   { msg: 'The secret to getting ahead is getting started. You already did.', sub: 'Keep the momentum going today.' },
   { msg: 'Saving a little today means freedom a lot sooner.', sub: 'Every rand adds up faster than you think.' },
-  { msg: 'Stress less. Plan more. Live fully.', sub: 'That\'s the ZEST way.' }
+  { msg: 'Stress less. Plan more. Live fully.', sub: 'That\'s the ZEST way.' },
+  { msg: 'Wealth isn\'t built overnight — it\'s built with daily habits.', sub: 'You\'re forming the right ones.' },
+  { msg: 'Every rand tracked is a step toward clarity.', sub: 'Know your numbers, own your future.' },
+  { msg: 'The difference between a dream and a goal is a deadline and a plan.', sub: 'Set yours in ZEST today.' },
+  { msg: 'You work hard for your money — make sure your money works hard for you.', sub: 'Let\'s put it to work.' },
+  { msg: 'Financial stress is real, but so is financial peace. You\'re working toward it.', sub: 'One step at a time.' },
+  { msg: 'A wise person should have money in their head, not their heart.', sub: 'Stay intentional with every rand.' },
+  { msg: 'Start where you are. Use what you have. Do what you can.', sub: 'That\'s enough. That\'s ZEST.' },
+  { msg: 'Your money mindset shapes your money reality.', sub: 'Choose thoughts that build you up.' },
+  { msg: 'Don\'t just earn more — waste less. Both paths lead to the same place.', sub: 'Financial freedom.' },
+  { msg: 'The best time to review your budget is today.', sub: 'Five minutes now can save you hundreds later.' },
+  { msg: 'Goals without action are just daydreams. Take one small step today.', sub: 'Even the smallest step counts.' },
+  { msg: 'Not all debt is equal — knowing the difference changes everything.', sub: 'Focus on the highest-cost debt first.' },
+  { msg: 'Living below your means is not a sacrifice — it\'s a strategy.', sub: 'Your future self will thank you.' },
+  { msg: 'Financial literacy is the most valuable skill they never taught you in school.', sub: 'ZEST is your classroom.' },
+  { msg: 'Peace of mind is priceless. A solid financial plan is how you get there.', sub: 'Keep building.' },
+  { msg: 'Every morning is a fresh chance to make better money choices.', sub: 'Today is that morning.' }
 ];
 function loadDailyNudge() {
   const nm = $('daily-nudge-msg'); const ns = $('daily-nudge-sub');
@@ -1881,7 +1897,27 @@ const ZEST_QUOTES = [
   'Financial freedom isn\'t about being rich — it\'s about having choices.',
   'One less takeaway a week could save you R500 a month.',
   'Progress, not perfection. Keep going. 💚',
-  'You\'re not just managing money — you\'re building a life.'
+  'You\'re not just managing money — you\'re building a life.',
+  'The secret to getting ahead is getting started.',
+  'Track every rand — awareness is the first step to change.',
+  'A budget is telling your money where to go, not wondering where it went.',
+  'Rich people plan for three generations ahead. Start your plan today.',
+  'Debt is borrowed time — ZEST helps you take it back.',
+  'Your future self will thank you for every rand you save today.',
+  'Financial peace isn\'t a destination — it\'s a daily decision.',
+  'Don\'t count the days. Make the days count — financially and otherwise.',
+  'The greatest investment you can make is in yourself and your future.',
+  'Saving money is not about restriction — it\'s about intention.',
+  'Every financial goal starts with a single rand committed.',
+  'You don\'t need to be perfect with money. You just need to be consistent.',
+  'True wealth is waking up without financial stress.',
+  'Start small. Stay consistent. Watch your money grow.',
+  'A little savings each day adds up to a lot of security over time.',
+  'Your habits today shape your lifestyle tomorrow.',
+  'Money saved is money earned twice.',
+  'The road to financial freedom is paved with small daily choices.',
+  'Abundance isn\'t about how much you earn — it\'s about how wisely you use it.',
+  'Your money story is still being written. Make it a good one.'
 ];
 
 function generateZestMessages() {
@@ -1900,7 +1936,8 @@ function generateZestMessages() {
   const on = id => settings[id] !== false;
 
   // ── DAILY INSPIRATION QUOTE (always pinned at top) ──
-  const q = ZEST_QUOTES[new Date().getDate() % ZEST_QUOTES.length];
+  const _qDoy = Math.floor((Date.now() - new Date(new Date().getFullYear(),0,0)) / 86400000);
+  const q = ZEST_QUOTES[_qDoy % ZEST_QUOTES.length];
   msgs.push({ id:'quote-pinned', type:'inspire', icon:'✨', cat:'ZEST Inspiration', title: `Good morning, ${firstName} — your quote for today`, body: q, time: 'Today', unread: false });
 
   // ── DAILY ZEST ──
