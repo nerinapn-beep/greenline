@@ -1245,16 +1245,15 @@ html,body{height:100%;overflow:hidden;background:var(--dark-2);font-family:var(-
 
     <!-- PAYWALL SCREEN -->
     <div class="screen" id="screen-paywall" style="display:flex;flex-direction:column;background:var(--cream)">
-      <div class="paywall-hero">
+      <div style="padding:14px 18px 0;flex-shrink:0">
+        <button onclick="showScreen('home')" style="background:none;border:none;font-size:13px;color:var(--green);font-weight:600;cursor:pointer;padding:0;display:flex;align-items:center;gap:4px">← Back</button>
+      </div>
+      <div class="paywall-hero" style="padding-top:10px">
         <div class="paywall-logo">Zest</div>
         <div class="paywall-tagline">Your money, handled. Your life, lived.</div>
         <div class="paywall-trial-done" id="paywall-status-badge">⏰ Your 7-day trial has ended</div>
       </div>
       <div style="padding:16px 18px 4px;flex-shrink:0">
-        <div class="plan-toggle" id="billing-toggle">
-          <button class="plan-toggle-btn active" id="tbtn-monthly" onclick="setBilling('monthly')">Monthly</button>
-          <button class="plan-toggle-btn" id="tbtn-annual" onclick="setBilling('annual')">Annual <span class="plan-toggle-save">2 months FREE</span></button>
-        </div>
       </div>
       <div class="plans-scroll">
 
@@ -1268,7 +1267,6 @@ html,body{height:100%;overflow:hidden;background:var(--dark-2);font-family:var(-
             <div class="plan-price">
               <div class="plan-price-amt" id="pp-starter">R49</div>
               <div class="plan-price-per" id="pp-starter-per">per month</div>
-              <div class="plan-price-annual" id="pp-starter-annual" style="display:none">R490/year — 2 months free</div>
             </div>
           </div>
           <div class="plan-features">
@@ -1295,7 +1293,6 @@ html,body{height:100%;overflow:hidden;background:var(--dark-2);font-family:var(-
             <div class="plan-price">
               <div class="plan-price-amt" id="pp-plus">R69</div>
               <div class="plan-price-per" id="pp-plus-per">per month</div>
-              <div class="plan-price-annual" id="pp-plus-annual" style="display:none">R690/year — 2 months free</div>
             </div>
           </div>
           <div class="plan-features">
@@ -1305,7 +1302,7 @@ html,body{height:100%;overflow:hidden;background:var(--dark-2);font-family:var(-
             <div class="plan-feat"><span class="pf-icon">✅</span>Bill reminders</div>
             <div class="plan-feat"><span class="pf-icon">✅</span>Push notifications — morning quote &amp; bill alerts</div>
             <div class="plan-feat locked-feat"><span class="pf-icon">🔒</span>Debt snowball strategy</div>
-            <div class="plan-feat locked-feat"><span class="pf-icon">🔒</span>Voice logging</div>
+            <div class="plan-feat locked-feat"><span class="pf-icon">🔒</span>Talk to Zest</div>
           </div>
           <button class="plan-cta" onclick="choosePlan('plus',event)">Choose Plus</button>
         </div>
@@ -1320,14 +1317,13 @@ html,body{height:100%;overflow:hidden;background:var(--dark-2);font-family:var(-
             <div class="plan-price">
               <div class="plan-price-amt" id="pp-pro">R99</div>
               <div class="plan-price-per" id="pp-pro-per">per month</div>
-              <div class="plan-price-annual" id="pp-pro-annual" style="display:none">R990/year — 2 months free</div>
             </div>
           </div>
           <div class="plan-features">
             <div class="plan-feat"><span class="pf-icon">✅</span>Everything in Plus</div>
             <div class="plan-feat"><span class="pf-icon">✅</span>Unlimited debts &amp; goals</div>
             <div class="plan-feat"><span class="pf-icon">✅</span>Debt snowball / avalanche strategy</div>
-            <div class="plan-feat"><span class="pf-icon">✅</span>Voice logging</div>
+            <div class="plan-feat"><span class="pf-icon">✅</span>Talk to Zest</div>
             <div class="plan-feat"><span class="pf-icon">✅</span>Growth screen &amp; full Reminders inbox</div>
             <div class="plan-feat"><span class="pf-icon">✅</span>Priority access to new features</div>
             <div class="plan-feat"><span class="pf-icon">🔜</span>PDF export reports <span style="font-size:10px;color:var(--muted)">(coming soon)</span></div>
